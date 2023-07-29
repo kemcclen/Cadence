@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server-express');
+const { gql } = require("apollo-server-express");
 
 const typeDefs = gql`
   type User {
@@ -7,6 +7,15 @@ const typeDefs = gql`
     email: String
     password: String
     thoughts: [Thought]!
+  }
+
+  type Track {
+    songId: String
+    title: String
+    artist: String
+    previewUrl: String
+    link: String
+    nextSongs: [Track]
   }
 
   type Thought {
@@ -34,6 +43,8 @@ const typeDefs = gql`
     user(username: String!): User
     thoughts(username: String): [Thought]
     thought(thoughtId: ID!): Thought
+    trackSearch(searchTerm: String!): [Track]
+    getTracks: [Track]
   }
 
   type Mutation {

@@ -1,15 +1,20 @@
 import React from "react";
+import "./index.css";
+import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
+import Searchbar from "./components/Searchbar";
+
+const client = new ApolloClient({
+  uri: "/graphql",
+  cache: new InMemoryCache(),
+});
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        
-        <p>
-         hello
-        </p>
-      </header>
-    </div>
+    <ApolloProvider client={client}>
+      <div className='App'>
+        <Searchbar />
+      </div>
+    </ApolloProvider>
   );
 }
 

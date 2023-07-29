@@ -1,14 +1,15 @@
-const { AuthenticationError } = require('apollo-server-express');
-const { User, Thought } = require('../models');
-const { signToken } = require('../utils/auth');
+const { AuthenticationError } = require("apollo-server-express");
+const { User, Thought, Track } = require("../models");
+const { signToken } = require("../utils/auth");
+const SpotifyWebApi = require("spotify-web-api-node");
 
 const resolvers = {
   Query: {
     users: async () => {
-      return User.find().populate('thoughts');
+      return User.find().populate("thoughts");
     },
     user: async (parent, { username }) => {
-      return User.findOne({ username }).populate('thoughts');
+      return User.findOne({ username }).populate("thoughts");
     },
     thoughts: async (parent, { username }) => {
       const params = username ? { username } : {};
@@ -16,6 +17,40 @@ const resolvers = {
     },
     thought: async (parent, { thoughtId }) => {
       return Thought.findOne({ _id: thoughtId });
+    },
+    trackSearch: async (parent, { searchTerm }) => {
+      const spotifyApi = new SpotifyWebApi({
+        clientId: "882d508f65284f2bb6391a98aed7f619",
+        clientSecret: "b2f332bfc4d94292b02881fdcfe7e939",
+      });
+
+      const data = await spotifyApi
+        .clientCredentialsGrant()
+        .then(function (data) {
+          console.log("The access token expires in " + data.body["expires_in"]);
+          console.log("The access token is " + data.body["access_token"]);
+
+          // Save the access token so that it's used in future calls
+          spotifyApi.setAccessToken(data.body["access_token"]);
+
+          spotifyApi.searchTracks(searchTerm).then((data) => {
+            const tracks = data.body.tracks.items.map((track) => {
+              return {
+                trackId: track.id,
+                title: track.name,
+                artist: track.artists[0].name,
+                previewUrl: track.preview_url,
+                link: track.external_urls.spotify,
+              };
+            });
+
+            Track.deleteMany({});
+            Track.create(tracks);
+          });
+        });
+    },
+    getTracks: async () => {
+      return Track.find();
     },
   },
 
@@ -29,13 +64,13 @@ const resolvers = {
       const user = await User.findOne({ email });
 
       if (!user) {
-        throw new AuthenticationError('No user found with this email address');
+        throw new AuthenticationError("No user found with this email address");
       }
 
       const correctPw = await user.isCorrectPassword(password);
 
       if (!correctPw) {
-        throw new AuthenticationError('Incorrect credentials');
+        throw new AuthenticationError("Incorrect credentials");
       }
 
       const token = signToken(user);
