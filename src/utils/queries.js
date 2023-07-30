@@ -1,10 +1,13 @@
 import { gql } from "@apollo/client";
 
-export const QUERY_TRACKS = gql`
-  query trackSearch($searchTerm: String!) {
-    trackSearch(searchTerm: $searchTerm) {
-      artist
+export const GET_TRACKS = gql`
+  query getTracks {
+    getTracks {
+      trackId
       title
+      artists
+      previewUrl
+      link
     }
   }
 `;

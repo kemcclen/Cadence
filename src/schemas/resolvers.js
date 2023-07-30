@@ -1,7 +1,8 @@
 const { AuthenticationError } = require("apollo-server-express");
-const { User, Thought, Track } = require("../models");
+const { User, Thought, Track, TrackAnalysis } = require("../models");
 const { signToken } = require("../utils/auth");
 const SpotifyWebApi = require("spotify-web-api-node");
+require("dotenv").config();
 
 const resolvers = {
   Query: {
@@ -18,39 +19,8 @@ const resolvers = {
     thought: async (parent, { thoughtId }) => {
       return Thought.findOne({ _id: thoughtId });
     },
-    trackSearch: async (parent, { searchTerm }) => {
-      const spotifyApi = new SpotifyWebApi({
-        clientId: "882d508f65284f2bb6391a98aed7f619",
-        clientSecret: "b2f332bfc4d94292b02881fdcfe7e939",
-      });
-
-      const data = await spotifyApi
-        .clientCredentialsGrant()
-        .then(function (data) {
-          console.log("The access token expires in " + data.body["expires_in"]);
-          console.log("The access token is " + data.body["access_token"]);
-
-          // Save the access token so that it's used in future calls
-          spotifyApi.setAccessToken(data.body["access_token"]);
-
-          spotifyApi.searchTracks(searchTerm).then((data) => {
-            const tracks = data.body.tracks.items.map((track) => {
-              return {
-                trackId: track.id,
-                title: track.name,
-                artist: track.artists[0].name,
-                previewUrl: track.preview_url,
-                link: track.external_urls.spotify,
-              };
-            });
-
-            Track.deleteMany({});
-            Track.create(tracks);
-          });
-        });
-    },
     getTracks: async () => {
-      return Track.find();
+      return await Track.find({});
     },
   },
 
@@ -108,6 +78,69 @@ const resolvers = {
         { $pull: { comments: { _id: commentId } } },
         { new: true }
       );
+    },
+    trackSearch: async (parent, { searchTerm }) => {
+      const spotifyApi = new SpotifyWebApi({
+        clientId: process.env.REACT_APP_CLIENT_ID,
+        clientSecret: process.env.REACT_APP_CLIENT_SECRET,
+      });
+
+      spotifyApi.clientCredentialsGrant().then(async (data) => {
+        console.log("The access token expires in " + data.body["expires_in"]);
+        console.log("The access token is " + data.body["access_token"]);
+
+        // Save the access token so that it's used in future calls
+        spotifyApi.setAccessToken(data.body["access_token"]);
+
+        await Track.deleteMany({});
+
+        spotifyApi.searchTracks(searchTerm).then(async (data) => {
+          return await Track.insertMany(
+            data.body.tracks.items.map((track) => {
+              return {
+                trackId: track.id,
+                title: track.name,
+                artists: track.artists.map((artist) => artist.name),
+                previewUrl: track.preview_url,
+                link: track.external_urls.spotify,
+              };
+            })
+          );
+        });
+      });
+    },
+    getTrackAnalysis: async (parent, { trackId }) => {
+      const spotifyApi = new SpotifyWebApi({
+        clientId: process.env.REACT_APP_CLIENT_ID,
+        clientSecret: process.env.REACT_APP_CLIENT_SECRET,
+      });
+
+      spotifyApi.clientCredentialsGrant().then(async (data) => {
+        console.log("The access token expires in " + data.body["expires_in"]);
+        console.log("The access token is " + data.body["access_token"]);
+
+        // Save the access token so that it's used in future calls
+        spotifyApi.setAccessToken(data.body["access_token"]);
+
+        const track = await Track.findOne({ trackId });
+
+        if (!track) {
+          throw new Error("No track found with this ID");
+        }
+
+        await TrackAnalysis.deleteMany({});
+
+        spotifyApi.getAudioFeaturesForTrack(track.trackId).then((data) => {
+          return TrackAnalysis.create({
+            trackId: track.trackId,
+            danceability: data.body.danceability,
+            energy: data.body.energy,
+            key: data.body.key,
+            bpm: data.body.tempo,
+            duration: data.body.duration_ms,
+          });
+        });
+      });
     },
   },
 };

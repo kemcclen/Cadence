@@ -13,7 +13,6 @@ const trackSchema = new Schema({
   },
   artists: {
     type: Array,
-    required: true,
   },
   previewUrl: {
     type: String,

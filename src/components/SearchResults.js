@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { FaPlay } from "react-icons/fa";
+import BottomNav from "./BottomNav";
+import MetaInfo from "./MetaInfo";
 
 const SearchResults = ({ results, setResults, next, setNext }) => {
   const [addedTracks, setAddedTracks] = useState([]);
@@ -30,49 +33,29 @@ const SearchResults = ({ results, setResults, next, setNext }) => {
     setShowMetaInfo(true);
   };
 
-  // const getNext = async () => {
-  //   if (next) {
-  //     await fetch("/search", {
-  //       method: "POST",
-  //       headers: {
-  //         "Content-type": "application/json",
-  //         "Access-Control-Allow-Origin": "*",
-  //         "Access-Control-Allow-Credentials": "true",
-  //         "Access-Control-Allow-Methods": "POST",
-  //         "Access-Control-Allow-Headers": "Content-Type, Authorization",
-  //       },
-  //       body: JSON.stringify({ track: next }),
-  //     })
-  //       .then((res) => res.json())
-  //       .then((data) => {
-  //         setResults(data);
-  //         setNext(data[0].next);
-  //         console.log(next);
-  //       });
-  //   }
-  // };
-
   const titles = results.map((track) => {
     let artists = [];
-    track.artists.forEach((artist) => artists.push(artist.name));
+    track.artists.forEach((artist) => artists.push(artist));
     const artistNames = artists.join(", ");
 
     return (
-      <React.Fragment key={track.id}>
-        <tr key={track.id}>
+      <React.Fragment key={track.trackId}>
+        <tr key={track.trackId}>
           <td>
             <div className='flex-container-tracks'>
-              <button
-                className='btn-play'
-                onClick={() => {
-                  if (audio.src !== track.preview) {
-                    audio.src = track.preview;
-                  }
-                  audio.paused ? audio.play() : audio.pause();
-                }}
-              >
-                {">||"}
-              </button>
+              {track.previewUrl && (
+                <button
+                  className='btn-play'
+                  onClick={() => {
+                    if (audio.src !== track.previewUrl) {
+                      audio.src = track.previewUrl;
+                    }
+                    audio.paused ? audio.play() : audio.pause();
+                  }}
+                >
+                  <FaPlay />
+                </button>
+              )}
               <button
                 className='btn-add-track'
                 onClick={() => {
@@ -99,9 +82,6 @@ const SearchResults = ({ results, setResults, next, setNext }) => {
           {showResults && (
             <>
               <h2 className='track-results-header'>Preview and Add Tracks</h2>
-              {/* <button className='btn-next' onClick={getNext}>
-                Next 20
-              </button> */}
               <table>
                 <tbody>{titles}</tbody>
               </table>
@@ -109,6 +89,10 @@ const SearchResults = ({ results, setResults, next, setNext }) => {
           )}
         </section>
       </div>
+      {showMetaInfo && (
+        <MetaInfo addedTracks={addedTracks} deleteTrack={deleteTrack} />
+      )}
+      <BottomNav search={goToSearch} data={goToData} />
     </>
   );
 };

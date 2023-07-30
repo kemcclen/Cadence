@@ -1,22 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import SearchResults from "./SearchResults";
-import { useQuery } from "@apollo/client";
-import { QUERY_TRACKS } from "../utils/queries";
+import { useLazyQuery, useMutation } from "@apollo/client";
+import { GET_TRACKS } from "../utils/queries";
+import { SEARCH_TRACKS } from "../utils/mutations";
 
 const Searchbar = () => {
   const [search, setSearch] = useState("");
-  const [results, setResults] = useState(null);
+  const [results, setResults] = useState([]);
   const [next, setNext] = useState("");
 
-  const { loading, error, data } = useQuery(QUERY_TRACKS, {
+  const [trackSearch, { loading, error, data }] = useMutation(SEARCH_TRACKS, {
     variables: { searchTerm: search },
   });
 
-  console.log(data);
-
-  if (loading) return <p>Loading...</p>;
-
-  // if (error) return <p>Error: Something Went Wrong</p>;
+  const [
+    getTracks,
+    { loading: loadingTracks, error: errorTracks, data: dataTracks },
+  ] = useLazyQuery(GET_TRACKS);
 
   const onSubmit = async (e) => {
     e.preventDefault();
@@ -24,75 +24,99 @@ const Searchbar = () => {
     let payload;
 
     if (document.getElementById("btn-track").checked) {
-      payload = JSON.stringify({ track: search });
+      payload = search;
     } else if (document.getElementById("btn-artist").checked) {
-      payload = JSON.stringify({ track: "artist:" + search });
+      payload = "artist: " + search;
     } else if (document.getElementById("btn-genre").checked) {
-      payload = JSON.stringify({ track: "genre:" + search });
+      payload = "genre: " + search;
     }
 
     if (search) {
-      setSearch(payload);
+      try {
+        trackSearch({
+          variables: { searchTerm: payload },
+        });
 
-      console.log(data);
+        if (error) console.log(error);
+
+        const tracks = await getTracks();
+
+        setResults(tracks.data.getTracks);
+
+        setSearch("");
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      alert("Please enter a search term.");
     }
   };
 
   return (
     <>
-      <div className='flex-container'>
-        <form id='search' onSubmit={onSubmit}>
-          <input
-            className='btn-search-radio'
-            type='radio'
-            name='search'
-            id='btn-track'
-            defaultChecked
-            value='By Track Title'
-          ></input>
-          <label htmlFor='btn-track' className='search-label'>
-            By Track Title
-          </label>
-          <input
-            className='btn-search-radio'
-            type='radio'
-            name='search'
-            id='btn-artist'
-            value='By Artist'
-          ></input>
-          <label htmlFor='btn-artist' className='search-label'>
-            By Artist
-          </label>
-          <input
-            className='btn-search-radio'
-            type='radio'
-            name='search'
-            id='btn-genre'
-            value='By Genre'
-          ></input>
-          <label htmlFor='btn-genre' className='search-label'>
-            By Genre
-          </label>
-          <div>
-            <input
-              className='searchbar'
-              id='searchbar'
-              type='text'
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder='Search by Track, Artist, or Genre.'
-            ></input>
-            <input className='btn-submit' value='Search' type='submit'></input>
+      {loading ? (
+        <h2>Loading...</h2>
+      ) : (
+        <>
+          <div className='flex-container'>
+            <form id='search' onSubmit={onSubmit}>
+              <input
+                className='btn-search-radio'
+                type='radio'
+                name='search'
+                id='btn-track'
+                defaultChecked
+                value='By Track Title'
+              ></input>
+              <label htmlFor='btn-track' className='search-label'>
+                By Track Title
+              </label>
+              <input
+                className='btn-search-radio'
+                type='radio'
+                name='search'
+                id='btn-artist'
+                value='By Artist'
+              ></input>
+              <label htmlFor='btn-artist' className='search-label'>
+                By Artist
+              </label>
+              <input
+                className='btn-search-radio'
+                type='radio'
+                name='search'
+                id='btn-genre'
+                value='By Genre'
+              ></input>
+              <label htmlFor='btn-genre' className='search-label'>
+                By Genre
+              </label>
+              <div>
+                <input
+                  className='searchbar'
+                  id='searchbar'
+                  type='text'
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder='Search by Track, Artist, or Genre.'
+                ></input>
+                <input
+                  className='btn-submit'
+                  value='Search'
+                  type='submit'
+                ></input>
+              </div>
+            </form>
           </div>
-        </form>
-      </div>
-      {results && (
-        <SearchResults
-          results={results}
-          setResults={setResults}
-          next={next}
-          setNext={setNext}
-        />
+          {results && (
+            <SearchResults
+              results={results}
+              setResults={setResults}
+              next={next}
+              setNext={setNext}
+            />
+          )}
+        </>
       )}
     </>
   );

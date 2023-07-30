@@ -10,12 +10,23 @@ const typeDefs = gql`
   }
 
   type Track {
-    songId: String
+    _id: ID
+    trackId: String
     title: String
-    artist: String
+    artists: [String]
     previewUrl: String
     link: String
-    nextSongs: [Track]
+    nextTracks: [Track]
+  }
+
+  type TrackAnalysis {
+    _id: ID
+    trackId: String
+    danceability: Float
+    energy: Float
+    key: Int
+    bpm: Float
+    duration: Float
   }
 
   type Thought {
@@ -43,7 +54,6 @@ const typeDefs = gql`
     user(username: String!): User
     thoughts(username: String): [Thought]
     thought(thoughtId: ID!): Thought
-    trackSearch(searchTerm: String!): [Track]
     getTracks: [Track]
   }
 
@@ -58,6 +68,8 @@ const typeDefs = gql`
     ): Thought
     removeThought(thoughtId: ID!): Thought
     removeComment(thoughtId: ID!, commentId: ID!): Thought
+    trackSearch(searchTerm: String!): [Track]
+    getTrackAnalysis(trackId: String!): TrackAnalysis
   }
 `;
 
