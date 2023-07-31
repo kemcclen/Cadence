@@ -313,6 +313,10 @@ th {
   padding: 1em 0 1em 1em;
 }
 
+.spinner {
+  left: 50%;
+}
+
 /* SECOND SECTION */
 
 .meta-info-header {

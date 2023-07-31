@@ -1,5 +1,5 @@
 const { AuthenticationError } = require("apollo-server-express");
-const { User, Thought, Track, TrackAnalysis } = require("../models");
+const { User, Thought, Track } = require("../models");
 const { signToken } = require("../utils/auth");
 const SpotifyWebApi = require("spotify-web-api-node");
 require("dotenv").config();

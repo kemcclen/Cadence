@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import SearchResults from "./SearchResults";
-import { useLazyQuery, useMutation } from "@apollo/client";
-import { GET_TRACKS } from "../utils/queries";
+import { useMutation } from "@apollo/client";
 import { SEARCH_TRACKS } from "../utils/mutations";
 
 const Searchbar = () => {
