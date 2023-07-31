@@ -50,6 +50,30 @@ const resolvers = {
       const token = signToken(user);
       return { token, user };
     },
+    updateUser: async (parent, { username, email, password }) => {
+      const user = await User.findOneAndUpdate(
+        { username },
+        { email, password },
+        { new: true }
+      );
+
+      if (!user) {
+        throw new AuthenticationError("No user found with this username");
+      }
+
+      const token = signToken(user);
+
+      return { token, user };
+    },
+    deleteUser: async (parent, { username }) => {
+      const user = await User.findOneAndDelete({ username });
+
+      if (!user) {
+        throw new AuthenticationError("No user found with this username");
+      }
+
+      return user;
+    },
     login: async (parent, { email, password }) => {
       const user = await User.findOne({ email });
 
