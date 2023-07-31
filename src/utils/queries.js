@@ -11,3 +11,16 @@ export const GET_TRACKS = gql`
     }
   }
 `;
+
+export const GET_TRACK_ANALYSIS = gql`
+  query getTrackAnalysis($trackId: String!) {
+    getTrackAnalysis(trackId: $trackId) {
+      trackId
+      danceability
+      energy
+      key
+      bpm
+      duration
+    }
+  }
+`;

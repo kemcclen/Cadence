@@ -9,18 +9,26 @@ const SearchResults = ({ results, setResults, next, setNext }) => {
   const [showMetaInfo, setShowMetaInfo] = useState(false);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
 
-  let portrait = window.matchMedia("(orientation: portrait)");
-
   useEffect(() => {
-    portrait.addEventListener("change", (e) => {
+    const portrait = window.matchMedia("(orientation: portrait)");
+
+    const handleResize = () => {
       setWindowWidth(window.innerWidth);
-    });
-  }, [windowWidth, portrait]);
+    };
+
+    portrait.addEventListener("change", handleResize);
+
+    return () => {
+      portrait.removeEventListener("change", handleResize);
+    };
+  }, []);
 
   let audio = new Audio();
 
   const deleteTrack = (id) => {
-    setAddedTracks(addedTracks.filter((track) => track.id !== id));
+    setAddedTracks((prevAddedTracks) =>
+      prevAddedTracks.filter((track) => track.trackId !== id)
+    );
   };
 
   const goToSearch = () => {
@@ -39,39 +47,37 @@ const SearchResults = ({ results, setResults, next, setNext }) => {
     const artistNames = artists.join(", ");
 
     return (
-      <React.Fragment key={track.trackId}>
-        <tr key={track.trackId}>
-          <td>
-            <div className='flex-container-tracks'>
-              {track.previewUrl && (
-                <button
-                  className='btn-play'
-                  onClick={() => {
-                    if (audio.src !== track.previewUrl) {
-                      audio.src = track.previewUrl;
-                    }
-                    audio.paused ? audio.play() : audio.pause();
-                  }}
-                >
-                  <FaPlay />
-                </button>
-              )}
+      <tr key={track.trackId}>
+        <td>
+          <div className='flex-container-tracks'>
+            {track.previewUrl && (
               <button
-                className='btn-add-track'
+                className='btn-play'
                 onClick={() => {
-                  if (!addedTracks.includes(track)) {
-                    setAddedTracks([...addedTracks, track]);
+                  if (audio.src !== track.previewUrl) {
+                    audio.src = track.previewUrl;
                   }
+                  audio.paused ? audio.play() : audio.pause();
                 }}
               >
-                +
+                <FaPlay />
               </button>
-            </div>
-          </td>
-          <td>{artistNames}</td>
-          <td>{track.title}</td>
-        </tr>
-      </React.Fragment>
+            )}
+            <button
+              className='btn-add-track'
+              onClick={() => {
+                if (!addedTracks.includes(track)) {
+                  setAddedTracks([...addedTracks, track]);
+                }
+              }}
+            >
+              +
+            </button>
+          </div>
+        </td>
+        <td>{artistNames}</td>
+        <td>{track.title}</td>
+      </tr>
     );
   });
 

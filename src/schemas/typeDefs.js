@@ -55,6 +55,7 @@ const typeDefs = gql`
     thoughts(username: String): [Thought]
     thought(thoughtId: ID!): Thought
     getTracks: [Track]
+    getTrackAnalysis(trackId: String!): TrackAnalysis
   }
 
   type Mutation {
@@ -69,7 +70,6 @@ const typeDefs = gql`
     removeThought(thoughtId: ID!): Thought
     removeComment(thoughtId: ID!, commentId: ID!): Thought
     trackSearch(searchTerm: String!): [Track]
-    getTrackAnalysis(trackId: String!): TrackAnalysis
   }
 `;
 

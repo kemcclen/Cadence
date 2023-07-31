@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { useMutation, useLazyQuery } from "@apollo/client";
-import { GET_TRACK_ANALYSIS } from "../utils/mutations";
-import { GET_TRACKS } from "../utils/queries";
+import { useLazyQuery } from "@apollo/client";
+import { GET_TRACK_ANALYSIS } from "../utils/queries";
 
 const Track = (props) => {
-  const [apiData, setApiData] = useState("");
+  const [apiData, setApiData] = useState(null);
 
-  const [getTrackAnalysis, { loading, error, data }] = useMutation(
+  const [getTrackAnalysis, { loading, error, data }] = useLazyQuery(
     GET_TRACK_ANALYSIS,
     {
       variables: { trackId: props.id },
@@ -15,11 +14,13 @@ const Track = (props) => {
 
   useEffect(() => {
     getTrackAnalysis();
-  }, []);
+  }, [getTrackAnalysis]);
 
-  console.log("DATA", data);
-
-  if (error) console.log(error);
+  useEffect(() => {
+    if (data) {
+      setApiData(data.getTrackAnalysis);
+    }
+  }, [data]);
 
   const keyConverter = {
     0: "C",
@@ -40,36 +41,35 @@ const Track = (props) => {
   props.artists.forEach((artist) => artists.push(artist));
   const artistList = artists.join(", ");
 
+  if (loading || !apiData) {
+    return (
+      <tr>
+        <td>Loading...</td>
+      </tr>
+    );
+  }
   return (
-    <>
-      {loading ? (
-        <h2>Loading...</h2>
-      ) : (
-        <tr key={props.id}>
-          <td>
-            <button
-              className='btn-delete-track'
-              onClick={() => props.deleteTrack(props.id)}
-            >
-              -
-            </button>
-          </td>
-          <td>{artistList}</td>
-          <td>{`${
-            props.title.length > 30
-              ? props.title.slice(0, 29) + "..."
-              : props.title
-          }`}</td>
-          <td>{`${Math.floor(
-            Math.round(apiData.duration / 1000 / 60)
-          )}:${Math.round(apiData.duration / 1000)}`}</td>
-          <td>{apiData.bpm}</td>
-          <td>{keyConverter[apiData.key]}</td>
-          <td>{Math.round(apiData.energy * 100) + "%"}</td>
-          <td>{Math.round(apiData.danceability * 100) + "%"}</td>
-        </tr>
-      )}
-    </>
+    <tr key={props.id}>
+      <td>
+        <button
+          className='btn-delete-track'
+          onClick={() => props.deleteTrack(props.id)}
+        >
+          -
+        </button>
+      </td>
+      <td>{artistList}</td>
+      <td>{`${
+        props.title.length > 30 ? props.title.slice(0, 29) + "..." : props.title
+      }`}</td>
+      <td>{`${Math.floor(
+        Math.round(apiData.duration / 1000 / 60)
+      )}:${Math.round(apiData.duration / 1000)}`}</td>
+      <td>{apiData.bpm}</td>
+      <td>{keyConverter[apiData.key]}</td>
+      <td>{Math.round(apiData.energy * 100) + "%"}</td>
+      <td>{Math.round(apiData.danceability * 100) + "%"}</td>
+    </tr>
   );
 };
 export default Track;

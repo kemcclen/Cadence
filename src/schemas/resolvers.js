@@ -22,8 +22,28 @@ const resolvers = {
     getTracks: async () => {
       return await Track.find({});
     },
-  },
+    getTrackAnalysis: async (parent, { trackId }) => {
+      const spotifyApi = new SpotifyWebApi({
+        clientId: process.env.REACT_APP_CLIENT_ID,
+        clientSecret: process.env.REACT_APP_CLIENT_SECRET,
+      });
 
+      // Ensure we have a valid access token before making the API call
+      const data = await spotifyApi.clientCredentialsGrant();
+      spotifyApi.setAccessToken(data.body["access_token"]);
+
+      const audioFeatures = await spotifyApi.getAudioFeaturesForTrack(trackId);
+
+      return {
+        trackId: trackId,
+        danceability: audioFeatures.body.danceability,
+        energy: audioFeatures.body.energy,
+        key: audioFeatures.body.key,
+        bpm: audioFeatures.body.tempo,
+        duration: audioFeatures.body.duration_ms,
+      };
+    },
+  },
   Mutation: {
     addUser: async (parent, { username, email, password }) => {
       const user = await User.create({ username, email, password });
@@ -80,67 +100,33 @@ const resolvers = {
       );
     },
     trackSearch: async (parent, { searchTerm }) => {
+      await Track.deleteMany({});
+
       const spotifyApi = new SpotifyWebApi({
         clientId: process.env.REACT_APP_CLIENT_ID,
         clientSecret: process.env.REACT_APP_CLIENT_SECRET,
       });
 
-      spotifyApi.clientCredentialsGrant().then(async (data) => {
-        console.log("The access token expires in " + data.body["expires_in"]);
-        console.log("The access token is " + data.body["access_token"]);
+      const data = await spotifyApi.clientCredentialsGrant();
+      console.log("The access token expires in " + data.body["expires_in"]);
+      console.log("The access token is " + data.body["access_token"]);
 
-        // Save the access token so that it's used in future calls
-        spotifyApi.setAccessToken(data.body["access_token"]);
+      // Save the access token so that it's used in future calls
+      spotifyApi.setAccessToken(data.body["access_token"]);
 
-        await Track.deleteMany({});
+      const searchResults = await spotifyApi.searchTracks(searchTerm);
 
-        spotifyApi.searchTracks(searchTerm).then(async (data) => {
-          return await Track.insertMany(
-            data.body.tracks.items.map((track) => {
-              return {
-                trackId: track.id,
-                title: track.name,
-                artists: track.artists.map((artist) => artist.name),
-                previewUrl: track.preview_url,
-                link: track.external_urls.spotify,
-              };
-            })
-          );
-        });
-      });
-    },
-    getTrackAnalysis: async (parent, { trackId }) => {
-      const spotifyApi = new SpotifyWebApi({
-        clientId: process.env.REACT_APP_CLIENT_ID,
-        clientSecret: process.env.REACT_APP_CLIENT_SECRET,
-      });
-
-      spotifyApi.clientCredentialsGrant().then(async (data) => {
-        console.log("The access token expires in " + data.body["expires_in"]);
-        console.log("The access token is " + data.body["access_token"]);
-
-        // Save the access token so that it's used in future calls
-        spotifyApi.setAccessToken(data.body["access_token"]);
-
-        const track = await Track.findOne({ trackId });
-
-        if (!track) {
-          throw new Error("No track found with this ID");
-        }
-
-        await TrackAnalysis.deleteMany({});
-
-        spotifyApi.getAudioFeaturesForTrack(track.trackId).then((data) => {
-          return TrackAnalysis.create({
-            trackId: track.trackId,
-            danceability: data.body.danceability,
-            energy: data.body.energy,
-            key: data.body.key,
-            bpm: data.body.tempo,
-            duration: data.body.duration_ms,
-          });
-        });
-      });
+      return await Track.insertMany(
+        searchResults.body.tracks.items.map((track) => {
+          return {
+            trackId: track.id,
+            title: track.name,
+            artists: track.artists.map((artist) => artist.name),
+            previewUrl: track.preview_url,
+            link: track.external_urls.spotify,
+          };
+        })
+      );
     },
   },
 };

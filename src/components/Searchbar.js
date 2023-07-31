@@ -13,11 +13,6 @@ const Searchbar = () => {
     variables: { searchTerm: search },
   });
 
-  const [
-    getTracks,
-    { loading: loadingTracks, error: errorTracks, data: dataTracks },
-  ] = useLazyQuery(GET_TRACKS);
-
   const onSubmit = async (e) => {
     e.preventDefault();
 
@@ -33,15 +28,11 @@ const Searchbar = () => {
 
     if (search) {
       try {
-        trackSearch({
+        const { data } = await trackSearch({
           variables: { searchTerm: payload },
         });
 
-        if (error) console.log(error);
-
-        const tracks = await getTracks();
-
-        setResults(tracks.data.getTracks);
+        setResults(data.trackSearch);
 
         setSearch("");
       } catch (error) {
