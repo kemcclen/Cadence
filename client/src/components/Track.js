@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useLazyQuery } from "@apollo/client";
-import { GET_TRACK_ANALYSIS } from "../utils/queries";
+import { GET_TRACK_ANALYSIS } from "../../../server/utils/queries";
 
 const Track = (props) => {
   const [apiData, setApiData] = useState(null);

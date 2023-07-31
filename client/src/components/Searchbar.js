@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import SearchResults from "./SearchResults";
 import { useMutation } from "@apollo/client";
-import { SEARCH_TRACKS } from "../utils/mutations";
+import { SEARCH_TRACKS } from "../../../server/utils/mutations";
 
 const Searchbar = () => {
   const [search, setSearch] = useState("");
