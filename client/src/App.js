@@ -1,6 +1,7 @@
 import React from "react";
 import "./index.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+
 import { ApolloProvider, ApolloClient, InMemoryCache } from "@apollo/client";
 import Searchbar from "./components/Searchbar";
 
