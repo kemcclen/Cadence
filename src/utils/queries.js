@@ -24,3 +24,15 @@ export const GET_TRACK_ANALYSIS = gql`
     }
   }
 `;
+
+export const GET_OPENAI_RESPONSE = gql`
+  query getOpenAIResponse($length: Int!, $input: String!) {
+    getOpenAIResponse(length: $length, input: $input) {
+      id
+      title
+      artist
+      album
+      duration
+    }
+  }
+`;

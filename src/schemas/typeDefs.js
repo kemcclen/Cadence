@@ -29,6 +29,14 @@ const typeDefs = gql`
     duration: Float
   }
 
+  type OpenAIResponse {
+    id: Int
+    title: String
+    artist: String
+    album: String
+    duration: String
+  }
+
   type Thought {
     _id: ID
     thoughtText: String
@@ -56,6 +64,7 @@ const typeDefs = gql`
     thought(thoughtId: ID!): Thought
     getTracks: [Track]
     getTrackAnalysis(trackId: String!): TrackAnalysis
+    getOpenAIResponse(length: Int!, input: String!): [OpenAIResponse]
   }
 
   type Mutation {

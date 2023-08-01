@@ -2,6 +2,7 @@ const { AuthenticationError } = require("apollo-server-express");
 const { User, Thought, Track } = require("../models");
 const { signToken } = require("../utils/auth");
 const SpotifyWebApi = require("spotify-web-api-node");
+const { Configuration, OpenAIApi } = require("openai");
 require("dotenv").config();
 
 const resolvers = {
@@ -42,6 +43,72 @@ const resolvers = {
         bpm: audioFeatures.body.tempo,
         duration: audioFeatures.body.duration_ms,
       };
+    },
+    getOpenAIResponse: async (parent, { length, input }) => {
+      // const configuration = new OpenAIApi({
+      //   apiKey: process.env.REACT_APP_OPENAI_API_KEY,
+      // });
+
+      // const openai = new OpenAIApi(configuration);
+
+      // const chatCompletion = await openai.createChatCompletion({
+      //   model: "text-davinci-003",
+      //   messages: [
+      //     {
+      //       role: "user",
+      //       content: `You are an assistant that only responds in JSON.
+      // Create a list of ${length} unique songs based off the following
+      // statement: "${input}". Include "id", "title", "artist", "album"
+      // in your response. An example response is: "
+      // [
+      //   {
+      //       "id": 1,
+      //       "title": "Hey Jude",
+      //       "artist": "The Beatles",
+      //       "album": "The Beatles (White Album)",
+      //       "duration": "4:56"
+      //       "preview_url": "https://p.scdn.co/mp3-preview/..."
+      //   }
+      // ]".`,
+      //     },
+      //   ],
+      // });
+      // console.log(chatCompletion.data.choices[0].message);
+
+      // return chatCompletion.data.choices[0].message;
+
+      const payload = {
+        temperature: 0,
+        max_tokens: 3000,
+        model: "text-davinci-003",
+        prompt: `You are an assistant that only responds in JSON. 
+      Create a list of ${length} unique songs based off the following 
+      statement: "${input}". Include "id", "title", "artist", "album" 
+      in your response. An example response is: "
+      [
+        {
+            "id": 1,
+            "title": "Hey Jude",
+            "artist": "The Beatles",
+            "album": "The Beatles (White Album)",
+            "duration": "4:56"
+        }
+      ]".`,
+      };
+
+      const response = await fetch("https://api.openai.com/v1/completions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const data = await response.json();
+
+      console.log("DATA", data.choices[0].text);
+      return data.choices[0].text;
     },
   },
   Mutation: {
