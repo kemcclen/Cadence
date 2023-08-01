@@ -34,7 +34,7 @@ const typeDefs = gql`
     title: String
     artist: String
     album: String
-    duration: Float
+    duration: String
     previewUrl: String
   }
 

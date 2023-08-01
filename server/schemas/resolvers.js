@@ -48,16 +48,15 @@ const resolvers = {
       const configuration = new Configuration({
         apiKey: process.env.REACT_APP_OPENAI_API_KEY,
       });
+
       const openai = new OpenAIApi(configuration);
+
       try {
-        const chatCompletion = await openai.createChatCompletion({
-          model: "gpt-3.5-turbo",
-          messages: [
-            {
-              role: "user",
-              content: `You are an assistant that only responds in JSON.
+        const chatCompletion = await openai.createCompletion({
+          model: "text-davinci-003",
+          prompt: `You are an assistant that only responds in JSON.
       Create a list of ${length} unique songs based off the following
-      statement: "${input}". Include "id", "title", "artist", "album"
+      statement: "${input}". Include "id", "title", "artist", "album", and "duration"
       in your response. An example response is: "
       [
         {
@@ -66,16 +65,33 @@ const resolvers = {
             "artist": "The Beatles",
             "album": "The Beatles (White Album)",
             "duration": "4:56"
-            "previewUrl": "https://p.scdn.co/mp3-preview/..."
         }
       ]".`,
-            },
-          ],
+          temperature: 0,
+          max_tokens: 3000,
         });
         // get the songs from the response
-        const songs = JSON.parse(
-          chatCompletion.data.choices[0].message.content
-        ).songs;
+        const songs = JSON.parse(chatCompletion.data.choices[0].text);
+
+        // get the preview urls for each song
+        const spotifyApi = new SpotifyWebApi({
+          clientId: process.env.REACT_APP_CLIENT_ID,
+          clientSecret: process.env.REACT_APP_CLIENT_SECRET,
+        });
+
+        // Ensure we have a valid access token before making the API call
+        const data = await spotifyApi.clientCredentialsGrant();
+        spotifyApi.setAccessToken(data.body["access_token"]);
+
+        // iterate through the songs and add the preview url to each song
+        for (song in songs) {
+          const searchResults = await spotifyApi.searchTracks(
+            songs[song].title + " " + songs[song].artist
+          );
+
+          songs[song].previewUrl =
+            searchResults.body.tracks.items[0].preview_url;
+        }
 
         let results = [];
 
@@ -90,6 +106,8 @@ const resolvers = {
             previewUrl: songs[song].previewUrl,
           });
         }
+
+        console.log("RESULTS", results);
 
         return results;
       } catch (error) {

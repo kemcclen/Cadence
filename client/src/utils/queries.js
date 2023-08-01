@@ -33,6 +33,7 @@ export const GET_OPENAI_RESPONSE = gql`
       artist
       album
       duration
+      previewUrl
     }
   }
 `;
