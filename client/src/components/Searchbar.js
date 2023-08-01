@@ -30,15 +30,36 @@ const Searchbar = () => {
   return (
     <>
       {loading ? (
-        <div className='container'>
-          <div className='row'>
-            <div className='col-12'>
-              <div className='spinner-border' role='status'>
-                <span className='sr-only'></span>
+        <>
+          <div className='flex-container'>
+            <form id='search' onSubmit={onSubmit}>
+              <div>
+                <input
+                  className='searchbar'
+                  id='searchbar'
+                  type='text'
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder='Happy camping trip'
+                ></input>
+                <input
+                  className='btn-submit'
+                  value='Search'
+                  type='submit'
+                ></input>
+              </div>
+            </form>
+          </div>
+          <div className='container'>
+            <div className='row'>
+              <div className='col-12 d-flex justify-content-center align-items-center mt-5'>
+                <div className='spinner-border' role='status'>
+                  <span className='sr-only'></span>
+                </div>
               </div>
             </div>
           </div>
-        </div>
+        </>
       ) : (
         <>
           <div className='flex-container'>

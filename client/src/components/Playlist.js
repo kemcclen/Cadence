@@ -1,6 +1,6 @@
 import React from "react";
 import { Carousel } from "react-bootstrap";
-import { FaPlay } from "react-icons/fa";
+import { PiPlayPause } from "react-icons/pi";
 
 const Playlist = ({ playlist }) => {
   let audio = new Audio();
@@ -22,7 +22,7 @@ const Playlist = ({ playlist }) => {
                 audio.paused ? audio.play() : audio.pause();
               }}
             >
-              <FaPlay />
+              <PiPlayPause />
             </button>
           )}
 
@@ -35,7 +35,7 @@ const Playlist = ({ playlist }) => {
 
   return (
     <>
-      <Carousel>{carouselItems}</Carousel>
+      <Carousel className='mt-5'>{carouselItems}</Carousel>
     </>
   );
 };

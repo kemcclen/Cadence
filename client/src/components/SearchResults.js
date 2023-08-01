@@ -23,11 +23,6 @@ const SearchResults = ({ results, setResults }) => {
       <div className='container'>
         <div className='row'>
           <div className='col-12'>
-            <h1 className='text-center'>Search Results</h1>
-          </div>
-        </div>
-        <div className='row'>
-          <div className='col-12'>
             <Playlist playlist={results} />
           </div>
         </div>
