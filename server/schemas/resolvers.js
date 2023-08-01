@@ -2,6 +2,7 @@ const { AuthenticationError } = require("apollo-server-express");
 const { User, Thought, Track } = require("../models");
 const { signToken } = require("../utils/auth");
 const SpotifyWebApi = require("spotify-web-api-node");
+const { Configuration, OpenAIApi } = require("openai");
 require("dotenv").config();
 
 const resolvers = {
@@ -43,6 +44,122 @@ const resolvers = {
         duration: audioFeatures.body.duration_ms,
       };
     },
+    getOpenAIResponse: async (parent, { length, input }) => {
+      const configuration = new Configuration({
+        apiKey: process.env.REACT_APP_OPENAI_API_KEY,
+      });
+
+      const openai = new OpenAIApi(configuration);
+
+      try {
+        const chatCompletion = await openai.createCompletion({
+          model: "text-davinci-003",
+          prompt: `You are an assistant that only responds in JSON.
+      Create a list of ${length} unique songs based off the following
+      statement: "${input}". Include "id", "title", "artist", "album", and "duration"
+      in your response. An example response is: "
+      [
+        {
+            "id": 1,
+            "title": "Hey Jude",
+            "artist": "The Beatles",
+            "album": "The Beatles (White Album)",
+            "duration": "4:56"
+        }
+      ]".`,
+          temperature: 0,
+          max_tokens: 3000,
+        });
+        // get the songs from the response
+        const songs = JSON.parse(chatCompletion.data.choices[0].text);
+
+        // get the preview urls for each song
+        const spotifyApi = new SpotifyWebApi({
+          clientId: process.env.REACT_APP_CLIENT_ID,
+          clientSecret: process.env.REACT_APP_CLIENT_SECRET,
+        });
+
+        // Ensure we have a valid access token before making the API call
+        const data = await spotifyApi.clientCredentialsGrant();
+        spotifyApi.setAccessToken(data.body["access_token"]);
+
+        // iterate through the songs and add the preview url and image to each song
+        for (song in songs) {
+          const searchResults = await spotifyApi.searchTracks(
+            songs[song].title + " " + songs[song].artist
+          );
+
+          songs[song].previewUrl =
+            searchResults.body.tracks.items[0].preview_url;
+
+          songs[song].image =
+            searchResults.body.tracks.items[0].album.images[0].url;
+        }
+
+        let results = [];
+
+        // iterate through the songs and create a new array of OpenAIResponse objects
+        for (song in songs) {
+          results.push({
+            id: songs[song].id,
+            title: songs[song].title,
+            artist: songs[song].artist,
+            album: songs[song].album,
+            duration: songs[song].duration,
+            previewUrl: songs[song].previewUrl,
+            image: songs[song].image,
+          });
+        }
+
+        console.log("RESULTS", results);
+
+        return results;
+      } catch (error) {
+        if (error.response) {
+          console.log(error.response.data);
+          console.log(error.response.status);
+          console.log(error.response.headers);
+        } else {
+          console.log(error.message);
+        }
+      }
+    },
+    // const payload = {
+    //   temperature: 0,
+    //   max_tokens: 3000,
+    //   model: "text-davinci-003",
+    //   prompt: `You are an assistant that only responds in JSON.
+    // Create a list of ${length} unique songs based off the following
+    // statement: "${input}". Include "id", "title", "artist", "album"
+    // in your response. An example response is: "
+    // [
+    //   {
+    //       "id": 1,
+    //       "title": "Hey Jude",
+    //       "artist": "The Beatles",
+    //       "album": "The Beatles (White Album)",
+    //       "duration": "4:56"
+    //   }
+    // ]".`,
+    // };
+    // const response = await fetch("https://api.openai.com/v1/completions", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
+    //   },
+    //   body: JSON.stringify(payload),
+    // })
+    //   .then((res) => {
+    //     if (res.status === 200) {
+    //       console.log("res", JSON.parse(res.body));
+    //       const songs = JSON.parse(res.body);
+    //       console.log(songs);
+    //       console.log(typeof songs);
+    //       return songs;
+    //     }
+    //   })
+    //   .catch((err) => console.log(err));
   },
   Mutation: {
     addUser: async (parent, { username, email, password }) => {
