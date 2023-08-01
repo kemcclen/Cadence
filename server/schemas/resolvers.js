@@ -83,7 +83,7 @@ const resolvers = {
         const data = await spotifyApi.clientCredentialsGrant();
         spotifyApi.setAccessToken(data.body["access_token"]);
 
-        // iterate through the songs and add the preview url to each song
+        // iterate through the songs and add the preview url and image to each song
         for (song in songs) {
           const searchResults = await spotifyApi.searchTracks(
             songs[song].title + " " + songs[song].artist
@@ -91,6 +91,9 @@ const resolvers = {
 
           songs[song].previewUrl =
             searchResults.body.tracks.items[0].preview_url;
+
+          songs[song].image =
+            searchResults.body.tracks.items[0].album.images[0].url;
         }
 
         let results = [];
@@ -104,6 +107,7 @@ const resolvers = {
             album: songs[song].album,
             duration: songs[song].duration,
             previewUrl: songs[song].previewUrl,
+            image: songs[song].image,
           });
         }
 

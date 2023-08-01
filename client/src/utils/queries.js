@@ -34,6 +34,7 @@ export const GET_OPENAI_RESPONSE = gql`
       album
       duration
       previewUrl
+      image
     }
   }
 `;

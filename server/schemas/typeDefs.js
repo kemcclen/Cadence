@@ -36,6 +36,7 @@ const typeDefs = gql`
     album: String
     duration: String
     previewUrl: String
+    image: String
   }
 
   type Thought {
