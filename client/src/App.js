@@ -12,7 +12,7 @@ const client = new ApolloClient({
 });
 =======
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Switch } from 'react-router-dom';
 import Login from './component/login';
 import Signup from './component/signup';
 import { ApolloProvider , ApolloClient, InMemoryCache, useApolloClient} from '@apollo/client';
