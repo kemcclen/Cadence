@@ -3,9 +3,6 @@
   "version": "0.1.0",
   "private": true,
   "proxy": "http://localhost:3001",
-<<<<<<< HEAD
-  "dependencies": {},
-=======
   "dependencies": {
     "@apollo/client": "^3.7.17",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
@@ -27,7 +24,6 @@
     "spotify-web-api-node": "^5.0.2",
     "web-vitals": "^2.1.4"
   },
->>>>>>> fba0b50 (login and signup page)
   "scripts": {
     "start": "react-scripts start",
     "dev": "concurrently \"cd server && nodemon server.js\" \"cd client && npm start\"",
