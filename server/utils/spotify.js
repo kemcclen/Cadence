@@ -39,7 +39,7 @@ const handleSpotifyCallback = async (req, res) => {
     spotifyApi.setAccessToken(accessToken);
     spotifyApi.setRefreshToken(refreshToken);
 
-    res.redirect("http://localhost:3000");
+    return spotifyApi;
   } catch (error) {
     console.error("Error exchanging authorization code:", error.message);
     res.status(500).json({ error: "Failed to exchange authorization code" });

@@ -70,7 +70,7 @@ export const LOGIN_USER = gql`
 `;
 
 export const LOGIN_SPOTIFY = gql`
-  query loginSpotify() {
+  query loginSpotify {
     loginSpotify
   }
 `;

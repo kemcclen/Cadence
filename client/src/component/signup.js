@@ -28,15 +28,12 @@ export const Signup = () => {
           password,
         },
       });
-
       if (loading) {
         return <div>Loading...</div>;
       }
-
       if (error) {
         setError(error.message);
       }
-
       if (data) {
         console.log("Signup Successful!", data);
         localStorage.setItem("token", data.addUser.token);

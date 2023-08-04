@@ -18,10 +18,10 @@ const userSchema = new Schema({
     required: true,
     minlength: 5,
   },
-  thoughts: [
+  playlists: [
     {
       type: Schema.Types.ObjectId,
-      ref: "Thought",
+      ref: "Playlist",
     },
   ],
 });

@@ -58,10 +58,13 @@ export const CREATE_PLAYLIST = gql`
       image: $image
       tracks: $tracks
     ) {
+      id
       name
       description
       image
       tracks
+      username
+      trackCount
     }
   }
 `;

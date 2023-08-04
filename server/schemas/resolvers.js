@@ -4,6 +4,7 @@ const { signToken } = require("../utils/auth");
 const SpotifyWebApi = require("spotify-web-api-node");
 const querystring = require("querystring");
 const { Configuration, OpenAIApi } = require("openai");
+const Playlist = require("../models/Playlist");
 require("dotenv").config();
 
 // Helper function to generate a random string for the state parameter
@@ -22,10 +23,10 @@ const generateRandomString = (length) => {
 const resolvers = {
   Query: {
     users: async () => {
-      return User.find().populate("thoughts");
+      return User.find().populate("playlists");
     },
     user: async (parent, { username }) => {
-      return User.findOne({ username }).populate("thoughts");
+      return User.findOne({ username }).populate("playlists");
     },
     thoughts: async (parent, { username }) => {
       const params = username ? { username } : {};
@@ -145,13 +146,16 @@ const resolvers = {
         throw new AuthenticationError("No user found with this email address");
       }
 
+      console.log("USER", user);
+
       const correctPw = await user.isCorrectPassword(password);
 
       if (!correctPw) {
         throw new AuthenticationError("Incorrect credentials");
       }
 
-      const token = signToken(user);
+      const token = signToken(user.username, user._id);
+      console.log("TOKEN", token);
 
       return { token, user };
     },
@@ -270,25 +274,17 @@ const resolvers = {
       { name, description, image, tracks },
       context
     ) => {
-      const spotifyApi = new SpotifyWebApi({
-        clientId: process.env.REACT_APP_CLIENT_ID,
-        clientSecret: process.env.REACT_APP_CLIENT_SECRET,
+      const spotifyApi = context;
+
+      const playlist = await spotifyApi.createPlaylist(name, {
+        description,
       });
 
-      // Ensure we have a valid access token before making the API call
-      const data = await spotifyApi.clientCredentialsGrant();
-      spotifyApi.setAccessToken(data.body["access_token"]);
-      spotifyApi.setRefreshToken(data.body["refresh_token"]);
-
-      const user = await spotifyApi.getMe();
-
-      if (!user) {
-        throw new AuthenticationError("No user found with this username");
+      if (!playlist) {
+        throw new AuthenticationError(
+          "You must be authenticated to create a playlist"
+        );
       }
-
-      const playlist = await spotifyApi.createPlaylist(user.body.id, name, {
-        description: description,
-      });
 
       const playlistId = playlist.body.id;
 
@@ -303,15 +299,14 @@ const resolvers = {
         await spotifyApi.addTracksToPlaylist(playlistId, tracksToAdd);
       }
 
-      return {
+      return await Playlist.create({
         id: playlistId,
-        name: name,
-        description: description,
-        image: image,
-        tracks: tracks,
-        username: user.body.id,
-        trackCount: tracks.length,
-      };
+        name: playlist.body.name,
+        description: playlist.body.description,
+        image: playlist.body.images[0],
+        tracks: playlist.body.tracks.items.map((track) => track.track.id),
+        trackCount: playlist.body.tracks.total,
+      });
     },
   },
 };
