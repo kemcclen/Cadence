@@ -2,8 +2,22 @@ const { AuthenticationError } = require("apollo-server-express");
 const { User, Thought, Track } = require("../models");
 const { signToken } = require("../utils/auth");
 const SpotifyWebApi = require("spotify-web-api-node");
+const querystring = require("querystring");
 const { Configuration, OpenAIApi } = require("openai");
 require("dotenv").config();
+
+// Helper function to generate a random string for the state parameter
+const generateRandomString = (length) => {
+  let text = "";
+  const possible =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (let i = 0; i < length; i += 1) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+
+  return text;
+};
 
 const resolvers = {
   Query: {
@@ -124,42 +138,39 @@ const resolvers = {
         }
       }
     },
-    // const payload = {
-    //   temperature: 0,
-    //   max_tokens: 3000,
-    //   model: "text-davinci-003",
-    //   prompt: `You are an assistant that only responds in JSON.
-    // Create a list of ${length} unique songs based off the following
-    // statement: "${input}". Include "id", "title", "artist", "album"
-    // in your response. An example response is: "
-    // [
-    //   {
-    //       "id": 1,
-    //       "title": "Hey Jude",
-    //       "artist": "The Beatles",
-    //       "album": "The Beatles (White Album)",
-    //       "duration": "4:56"
-    //   }
-    // ]".`,
-    // };
-    // const response = await fetch("https://api.openai.com/v1/completions", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
-    //   },
-    //   body: JSON.stringify(payload),
-    // })
-    //   .then((res) => {
-    //     if (res.status === 200) {
-    //       console.log("res", JSON.parse(res.body));
-    //       const songs = JSON.parse(res.body);
-    //       console.log(songs);
-    //       console.log(typeof songs);
-    //       return songs;
-    //     }
-    //   })
-    //   .catch((err) => console.log(err));
+    login: async (parent, { email, password }) => {
+      const user = await User.findOne({ email });
+
+      if (!user) {
+        throw new AuthenticationError("No user found with this email address");
+      }
+
+      const correctPw = await user.isCorrectPassword(password);
+
+      if (!correctPw) {
+        throw new AuthenticationError("Incorrect credentials");
+      }
+
+      const token = signToken(user);
+
+      return { token, user };
+    },
+    loginSpotify: async () => {
+      const state = generateRandomString(16);
+      const scopes = "playlist-modify-public playlist-modify-private";
+
+      const authURL =
+        "https://accounts.spotify.com/authorize?" +
+        querystring.stringify({
+          response_type: "code",
+          client_id: process.env.REACT_APP_CLIENT_ID,
+          scope: scopes,
+          redirect_uri: "http://localhost:3001/callback",
+          state: state,
+        });
+
+      return authURL;
+    },
   },
   Mutation: {
     addUser: async (parent, { username, email, password }) => {
@@ -190,23 +201,6 @@ const resolvers = {
       }
 
       return user;
-    },
-    login: async (parent, { email, password }) => {
-      const user = await User.findOne({ email });
-
-      if (!user) {
-        throw new AuthenticationError("No user found with this email address");
-      }
-
-      const correctPw = await user.isCorrectPassword(password);
-
-      if (!correctPw) {
-        throw new AuthenticationError("Incorrect credentials");
-      }
-
-      const token = signToken(user);
-
-      return { token, user };
     },
     addThought: async (parent, { thoughtText, thoughtAuthor }) => {
       const thought = await Thought.create({ thoughtText, thoughtAuthor });
@@ -268,6 +262,54 @@ const resolvers = {
           };
         })
       );
+    },
+    createPlaylist: async (
+      parent,
+      { id, name, description, image, tracks },
+      context
+    ) => {
+      const spotifyApi = new SpotifyWebApi({
+        clientId: process.env.REACT_APP_CLIENT_ID,
+        clientSecret: process.env.REACT_APP_CLIENT_SECRET,
+      });
+
+      // Ensure we have a valid access token before making the API call
+      const data = await spotifyApi.clientCredentialsGrant();
+      spotifyApi.setAccessToken(data.body["access_token"]);
+      spotifyApi.setRefreshToken(data.body["refresh_token"]);
+
+      const user = await spotifyApi.getMe();
+
+      if (!user) {
+        throw new AuthenticationError("No user found with this username");
+      }
+
+      const playlist = await spotifyApi.createPlaylist(user.body.id, name, {
+        description: description,
+      });
+
+      const playlistId = playlist.body.id;
+
+      console.log("PLAYLIST", playlist.body);
+
+      if (image) {
+        await spotifyApi.uploadCustomPlaylistCoverImage(playlistId, image);
+      }
+
+      if (tracks) {
+        const tracksToAdd = tracks.map((track) => track.trackId);
+        await spotifyApi.addTracksToPlaylist(playlistId, tracksToAdd);
+      }
+
+      return {
+        id: playlistId,
+        name: name,
+        description: description,
+        image: image,
+        tracks: tracks,
+        username: user.body.id,
+        trackCount: tracks.length,
+      };
     },
   },
 };

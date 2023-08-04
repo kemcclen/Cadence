@@ -39,6 +39,17 @@ const typeDefs = gql`
     image: String
   }
 
+  type Playlist {
+    _id: ID
+    id: String
+    name: String
+    description: String
+    image: String
+    tracks: [String]
+    username: String
+    trackCount: Int
+  }
+
   type Thought {
     _id: ID
     thoughtText: String
@@ -67,13 +78,14 @@ const typeDefs = gql`
     getTracks: [Track]
     getTrackAnalysis(trackId: String!): TrackAnalysis
     getOpenAIResponse(length: Int!, input: String!): [OpenAIResponse]
+    login(email: String!, password: String!): Auth
+    loginSpotify: String
   }
 
   type Mutation {
     addUser(username: String!, email: String!, password: String!): Auth
     updateUser(username: String!, email: String!, password: String!): Auth
     deleteUser(username: String!): User
-    login(email: String!, password: String!): Auth
     addThought(thoughtText: String!, thoughtAuthor: String!): Thought
     addComment(
       thoughtId: ID!
@@ -83,6 +95,14 @@ const typeDefs = gql`
     removeThought(thoughtId: ID!): Thought
     removeComment(thoughtId: ID!, commentId: ID!): Thought
     trackSearch(searchTerm: String!): [Track]
+    createPlaylist(
+      id: String
+      name: String!
+      description: String
+      image: String
+      tracks: [String]
+      username: String
+    ): Playlist
   }
 `;
 
