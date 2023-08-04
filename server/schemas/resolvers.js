@@ -97,6 +97,7 @@ const resolvers = {
         // Ensure we have a valid access token before making the API call
         const data = await spotifyApi.clientCredentialsGrant();
         spotifyApi.setAccessToken(data.body["access_token"]);
+        spotifyApi.setRefreshToken(data.body["refresh_token"]);
 
         // iterate through the songs and add the preview url and image to each song
         for (song in songs) {
@@ -154,7 +155,8 @@ const resolvers = {
         throw new AuthenticationError("Incorrect credentials");
       }
 
-      const token = signToken(user.username, user._id);
+      const token = signToken(user);
+
       console.log("TOKEN", token);
 
       return { token, user };

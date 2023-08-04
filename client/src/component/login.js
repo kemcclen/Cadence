@@ -1,36 +1,39 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
 import "../component/login.css";
 import { useLazyQuery } from "@apollo/client";
 import { LOGIN_USER } from "../utils/queries";
+import Auth from "../utils/auth";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const navigate = useNavigate();
-
-  const [login] = useLazyQuery(LOGIN_USER);
+  const [login] = useLazyQuery(LOGIN_USER, {
+    onCompleted: (data) => {
+      console.log("Login Successful!", data.login);
+      Auth.login(data.login.token);
+    },
+    onError: (error) => {
+      console.error(error);
+      setError("Invalid email or password");
+    },
+    fetchPolicy: "network-only",
+  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      const { data, loading, error } = await login({
+      await login({
         variables: {
           username: email,
           password,
         },
       });
-
-      if (data) {
-        console.log("Login Successful!", data.login);
-        localStorage.setItem("token", data.login.token);
-        navigate("/");
-      }
     } catch (err) {
+      console.error(err);
       setError("Invalid email or password");
     }
   };

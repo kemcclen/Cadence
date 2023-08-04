@@ -22,25 +22,17 @@ export const Signup = () => {
     }
 
     try {
-      const { data, loading, error } = await addUser({
+      await addUser({
         variables: {
           username,
           password,
         },
+        onCompleted: (data) => {
+          console.log("Signup Successful!", data.addUser);
+          localStorage.setItem("id_token", data.addUser.token);
+          navigate("/login");
+        },
       });
-      if (loading) {
-        return <div>Loading...</div>;
-      }
-      if (error) {
-        setError(error.message);
-      }
-      if (data) {
-        console.log("Signup Successful!", data);
-        localStorage.setItem("token", data.addUser.token);
-        navigate("/login");
-      } else {
-        setError("Something went wrong!");
-      }
     } catch (err) {
       setError(err.response.data.message);
     }

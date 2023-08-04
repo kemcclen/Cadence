@@ -1,21 +1,18 @@
 import React, { useState } from "react";
 import SearchResults from "./SearchResults";
+import AppNavbar from "./Navbar";
 import { useLazyQuery } from "@apollo/client";
 import { GET_OPENAI_RESPONSE, LOGIN_SPOTIFY } from "../utils/queries";
 
 const Searchbar = () => {
   const [search, setSearch] = useState("");
   const [results, setResults] = useState([]);
-  const [spotifyAuthLink, setSpotifyAuthLink] = useState("");
 
-  const [getOpenAIResponse, { loading, data }] = useLazyQuery(
-    GET_OPENAI_RESPONSE,
-    {
-      onCompleted: (data) => {
-        setResults(data.getOpenAIResponse);
-      },
-    }
-  );
+  const [getOpenAIResponse, { loading }] = useLazyQuery(GET_OPENAI_RESPONSE, {
+    onCompleted: (data) => {
+      setResults(data.getOpenAIResponse);
+    },
+  });
 
   const [loginSpotify] = useLazyQuery(LOGIN_SPOTIFY);
 
@@ -23,21 +20,12 @@ const Searchbar = () => {
     e.preventDefault();
 
     try {
-      const { data, loading, error } = await loginSpotify();
-
-      if (loading) {
-        return <div>Loading...</div>;
-      }
-
-      if (error) {
-        console.log(error);
-      }
-
-      if (data) {
-        console.log("Login Successful!", data.loginSpotify);
-        setSpotifyAuthLink(data.loginSpotify);
-        window.location.href = data.loginSpotify;
-      }
+      await loginSpotify({
+        onCompleted: (data) => {
+          console.log("Login Successful!", data.loginSpotify);
+          window.location.href = data.loginSpotify;
+        },
+      });
     } catch (err) {
       console.error(err);
     }
@@ -58,6 +46,7 @@ const Searchbar = () => {
     <>
       {loading ? (
         <>
+          <AppNavbar />
           <div className='flex-container'>
             <form id='search' onSubmit={onSubmit}>
               <div>
@@ -87,12 +76,16 @@ const Searchbar = () => {
                 >
                   <span className='sr-only'></span>
                 </div>
+                <span className='ml-3'>
+                  Getting AI playlist recommendations and Spotify data...
+                </span>
               </div>
             </div>
           </div>
         </>
       ) : (
         <>
+          <AppNavbar />
           <div className='flex-container'>
             <form id='search' onSubmit={onSubmit}>
               <div>
