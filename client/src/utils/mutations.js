@@ -13,8 +13,8 @@ export const SEARCH_TRACKS = gql`
 `;
 
 export const ADD_USER = gql`
-  mutation addUser($username: String!, $email: String!, $password: String!) {
-    addUser(username: $username, email: $email, password: $password) {
+  mutation addUser($username: String!, $password: String!) {
+    addUser(username: $username, password: $password) {
       token
       user {
         _id
@@ -45,10 +45,23 @@ export const DELETE_USER = gql`
   }
 `;
 
-export const LOGIN_USER = gql`
-  mutation login($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
-      token
+export const CREATE_PLAYLIST = gql`
+  mutation createPlaylist(
+    $name: String!
+    $description: String
+    $image: String
+    $tracks: [String]
+  ) {
+    createPlaylist(
+      name: $name
+      description: $description
+      image: $image
+      tracks: $tracks
+    ) {
+      name
+      description
+      image
+      tracks
     }
   }
 `;

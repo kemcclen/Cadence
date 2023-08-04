@@ -78,12 +78,12 @@ const typeDefs = gql`
     getTracks: [Track]
     getTrackAnalysis(trackId: String!): TrackAnalysis
     getOpenAIResponse(length: Int!, input: String!): [OpenAIResponse]
-    login(email: String!, password: String!): Auth
+    login(username: String!, password: String!): Auth
     loginSpotify: String
   }
 
   type Mutation {
-    addUser(username: String!, email: String!, password: String!): Auth
+    addUser(username: String!, password: String!): Auth
     updateUser(username: String!, email: String!, password: String!): Auth
     deleteUser(username: String!): User
     addThought(thoughtText: String!, thoughtAuthor: String!): Thought
@@ -96,12 +96,10 @@ const typeDefs = gql`
     removeComment(thoughtId: ID!, commentId: ID!): Thought
     trackSearch(searchTerm: String!): [Track]
     createPlaylist(
-      id: String
       name: String!
       description: String
       image: String
       tracks: [String]
-      username: String
     ): Playlist
   }
 `;

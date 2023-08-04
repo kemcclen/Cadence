@@ -60,3 +60,17 @@ export const GET_OPENAI_RESPONSE = gql`
     }
   }
 `;
+
+export const LOGIN_USER = gql`
+  query login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
+      token
+    }
+  }
+`;
+
+export const LOGIN_SPOTIFY = gql`
+  query loginSpotify() {
+    loginSpotify
+  }
+`;

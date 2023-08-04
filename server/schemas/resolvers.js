@@ -138,8 +138,8 @@ const resolvers = {
         }
       }
     },
-    login: async (parent, { email, password }) => {
-      const user = await User.findOne({ email });
+    login: async (parent, { username, password }) => {
+      const user = await User.findOne({ username });
 
       if (!user) {
         throw new AuthenticationError("No user found with this email address");
@@ -173,8 +173,8 @@ const resolvers = {
     },
   },
   Mutation: {
-    addUser: async (parent, { username, email, password }) => {
-      const user = await User.create({ username, email, password });
+    addUser: async (parent, { username, password }) => {
+      const user = await User.create({ username, password });
       const token = signToken(user);
       return { token, user };
     },
@@ -265,7 +265,7 @@ const resolvers = {
     },
     createPlaylist: async (
       parent,
-      { id, name, description, image, tracks },
+      { name, description, image, tracks },
       context
     ) => {
       const spotifyApi = new SpotifyWebApi({
