@@ -82,6 +82,7 @@ const typeDefs = gql`
   }
 
   type Query {
+    login(email: String!, password: String!): Auth
     users: [User]
     user(username: String!): User
     thoughts(username: String): [Thought]

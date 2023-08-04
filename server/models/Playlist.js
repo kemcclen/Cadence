@@ -1,48 +1,26 @@
 const { Schema, model } = require("mongoose");
+const Track = require("./Track");
 
 const playlistSchema = new Schema({
-  name: {
+  id: {
     type: String,
     required: true,
+    unique: true,
+  },
+  name: {
+    type: String,
   },
   description: {
     type: String,
   },
-  images: [
+  image: {
+    type: String,
+  },
+  tracks: [
     {
       type: String,
     },
   ],
-  tracks: [
-    {
-      title: {
-        type: String,
-      },
-      artists: [
-        {
-          type: String,
-        },
-      ],
-      duration: {
-        type: String,
-      },
-      previewUrl: {
-        type: String,
-      },
-      link: {
-        type: String,
-      },
-      image: {
-        type: String,
-      },
-      nextTracks: {
-        type: Array,
-      },
-    },
-  ],
-  link: {
-    type: String,
-  },
   username: {
     type: String,
     ref: "User",
@@ -50,7 +28,7 @@ const playlistSchema = new Schema({
 });
 
 playlistSchema.virtual("trackCount").get(function () {
-  return this.tracks ? this.tracks.length : 0;
+  return this.tracks.length;
 });
 
 const Playlist = model("Playlist", playlistSchema);
