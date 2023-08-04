@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import axios from "axios";
 import "../component/signup.css";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@apollo/client";
@@ -23,12 +22,28 @@ export const Signup = () => {
     }
 
     try {
-      const { data } = await addUser({
-        variables: { username, password },
+      const { data, loading, error } = await addUser({
+        variables: {
+          username,
+          password,
+        },
       });
-      console.log(data.addUser);
-      localStorage.setItem("token", data.addUser.token);
-      navigate("/login");
+
+      if (loading) {
+        return <div>Loading...</div>;
+      }
+
+      if (error) {
+        setError(error.message);
+      }
+
+      if (data) {
+        console.log("Signup Successful!", data);
+        localStorage.setItem("token", data.addUser.token);
+        navigate("/login");
+      } else {
+        setError("Something went wrong!");
+      }
     } catch (err) {
       setError(err.response.data.message);
     }
