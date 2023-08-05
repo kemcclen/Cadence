@@ -45,14 +45,14 @@ export const DELETE_USER = gql`
   }
 `;
 
-export const CREATE_PLAYLIST = gql`
-  mutation createPlaylist(
+export const CREATE_SPOTIFY_PLAYLIST = gql`
+  mutation createSpotifyPlaylist(
     $name: String!
     $description: String
     $image: String
     $tracks: [String]
   ) {
-    createPlaylist(
+    createSpotifyPlaylist(
       name: $name
       description: $description
       image: $image
@@ -63,6 +63,30 @@ export const CREATE_PLAYLIST = gql`
       description
       image
       tracks
+      username
+      trackCount
+    }
+  }
+`;
+
+export const SAVE_PLAYLIST = gql`
+  mutation savePlaylist(
+    $name: String!
+    $description: String
+    $images: [String]
+    $link: String
+  ) {
+    savePlaylist(
+      name: $name
+      description: $description
+      images: $images
+      link: $link
+    ) {
+      _id
+      name
+      description
+      images
+      link
       username
       trackCount
     }

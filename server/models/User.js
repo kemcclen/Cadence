@@ -1,4 +1,5 @@
 const { Schema, model } = require("mongoose");
+const Playlist = require("./Playlist");
 const bcrypt = require("bcrypt");
 
 const userSchema = new Schema({

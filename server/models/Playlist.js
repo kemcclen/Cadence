@@ -1,26 +1,26 @@
 const { Schema, model } = require("mongoose");
-const Track = require("./Track");
 
 const playlistSchema = new Schema({
-  id: {
-    type: String,
-    required: true,
-    unique: true,
-  },
   name: {
     type: String,
+    required: true,
   },
   description: {
     type: String,
   },
-  image: {
-    type: String,
-  },
+  images: [
+    {
+      type: String,
+    },
+  ],
   tracks: [
     {
       type: String,
     },
   ],
+  link: {
+    type: String,
+  },
   username: {
     type: String,
     ref: "User",

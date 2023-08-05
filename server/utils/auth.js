@@ -9,7 +9,7 @@ module.exports = {
     const payload = { username, _id };
     return jwt.sign({ data: payload }, secret, { expiresIn: expiration });
   },
-  verifyToken: function (token) {
+  getUser: function (token) {
     try {
       if (token) {
         const user = jwt.verify(token, secret);

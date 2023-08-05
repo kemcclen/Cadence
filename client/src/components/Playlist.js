@@ -5,9 +5,9 @@ import { PiPlayPause } from "react-icons/pi";
 const Playlist = ({ playlist }) => {
   let audio = new Audio();
 
-  const carouselItems = playlist.map((track) => {
+  const carouselItems = playlist.map((track, index) => {
     return (
-      <Carousel.Item key={track.id}>
+      <Carousel.Item key={index}>
         <img className='d-block w-100' src={track.image} alt='...' />
         <Carousel.Caption>
           <h3>{track.title}</h3>

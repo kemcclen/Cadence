@@ -74,3 +74,17 @@ export const LOGIN_SPOTIFY = gql`
     loginSpotify
   }
 `;
+
+export const GET_USER_PLAYLISTS = gql`
+  query getUserPlaylists {
+    getUserPlaylists {
+      _id
+      name
+      description
+      images
+      tracks
+      username
+      trackCount
+    }
+  }
+`;

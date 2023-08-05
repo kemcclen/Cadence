@@ -20,6 +20,9 @@ const trackSchema = new Schema({
   link: {
     type: String,
   },
+  image: {
+    type: String,
+  },
   nextTracks: {
     type: Array,
   },

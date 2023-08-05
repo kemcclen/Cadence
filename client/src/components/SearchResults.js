@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
 import Playlist from "./Playlist";
+import SavePlaylistForm from "./SavePlaylistForm";
 
 const SearchResults = ({ results, setResults }) => {
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+
+  let images = [];
+  for (let i = 0; i < results.length; i++) {
+    if (i === 4) break;
+    images.push(results[i].image);
+  }
 
   useEffect(() => {
     const portrait = window.matchMedia("(orientation: portrait)");
@@ -24,6 +31,11 @@ const SearchResults = ({ results, setResults }) => {
         <div className='row'>
           <div className='col-12'>
             <Playlist playlist={results} />
+            <SavePlaylistForm
+              className='mt-3'
+              tracks={results}
+              images={images}
+            />
           </div>
         </div>
       </div>

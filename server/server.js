@@ -1,7 +1,7 @@
 const express = require("express");
 const { ApolloServer } = require("apollo-server-express");
 const path = require("path");
-const authMiddleware = require("./utils/auth");
+const Auth = require("./utils/auth");
 const { handleSpotifyCallback, spotifyApi } = require("./utils/spotify");
 
 const { typeDefs, resolvers } = require("./schemas");
@@ -9,11 +9,18 @@ const db = require("./config/connection");
 
 const PORT = process.env.REAC_APP_PORT || 3001;
 const app = express();
-
+//get the user info from the token
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: spotifyApi,
+  context: ({ req }) => {
+    const token = req.get("authorization") || "";
+    console.log("TOKEN:", token);
+    return {
+      user: Auth.getUser(token.replace("Bearer ", "")),
+      api: spotifyApi,
+    };
+  },
 });
 
 app.use(express.urlencoded({ extended: false }));

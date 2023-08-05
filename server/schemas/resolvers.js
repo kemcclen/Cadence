@@ -1,10 +1,9 @@
 const { AuthenticationError } = require("apollo-server-express");
-const { User, Thought, Track } = require("../models");
+const { User, Thought, Track, Playlist } = require("../models");
 const { signToken } = require("../utils/auth");
 const SpotifyWebApi = require("spotify-web-api-node");
 const querystring = require("querystring");
 const { Configuration, OpenAIApi } = require("openai");
-const Playlist = require("../models/Playlist");
 require("dotenv").config();
 
 // Helper function to generate a random string for the state parameter
@@ -99,7 +98,7 @@ const resolvers = {
         spotifyApi.setAccessToken(data.body["access_token"]);
         spotifyApi.setRefreshToken(data.body["refresh_token"]);
 
-        // iterate through the songs and add the preview url and image to each song
+        // iterate through the songs and add the preview url, image, and uri of each song
         for (song in songs) {
           const searchResults = await spotifyApi.searchTracks(
             songs[song].title + " " + songs[song].artist
@@ -110,6 +109,8 @@ const resolvers = {
 
           songs[song].image =
             searchResults.body.tracks.items[0].album.images[0].url;
+
+          songs[song].uri = searchResults.body.tracks.items[0].uri;
         }
 
         let results = [];
@@ -117,7 +118,7 @@ const resolvers = {
         // iterate through the songs and create a new array of OpenAIResponse objects
         for (song in songs) {
           results.push({
-            id: songs[song].id,
+            id: songs[song].uri,
             title: songs[song].title,
             artist: songs[song].artist,
             album: songs[song].album,
@@ -144,7 +145,9 @@ const resolvers = {
       const user = await User.findOne({ username });
 
       if (!user) {
-        throw new AuthenticationError("No user found with this email address");
+        throw new AuthenticationError(
+          "No user found with this username/email address"
+        );
       }
 
       console.log("USER", user);
@@ -177,6 +180,21 @@ const resolvers = {
 
       return authURL;
     },
+    getUserPlaylists: async (parent, args, context) => {
+      const user = context.user;
+
+      if (!user) {
+        throw new AuthenticationError(
+          "You must be logged in to get a user's playlists"
+        );
+      }
+
+      const username = user.data.username;
+
+      const playlists = await Playlist.find({ username });
+
+      return playlists;
+    },
   },
   Mutation: {
     addUser: async (parent, { username, password }) => {
@@ -186,10 +204,10 @@ const resolvers = {
       const token = signToken(user);
       return { token, user };
     },
-    updateUser: async (parent, { username, email, password }) => {
+    updateUser: async (parent, { username, password }) => {
       const user = await User.findOneAndUpdate(
         { username },
-        { email, password },
+        { password },
         { new: true }
       );
 
@@ -267,16 +285,17 @@ const resolvers = {
             artists: track.artists.map((artist) => artist.name),
             previewUrl: track.preview_url,
             link: track.external_urls.spotify,
+            image: track.album.images[0].url,
           };
         })
       );
     },
-    createPlaylist: async (
+    createSpotifyPlaylist: async (
       parent,
       { name, description, image, tracks },
       context
     ) => {
-      const spotifyApi = context;
+      const spotifyApi = context.spotifyApi;
 
       const playlist = await spotifyApi.createPlaylist(name, {
         description,
@@ -308,7 +327,48 @@ const resolvers = {
         image: playlist.body.images[0],
         tracks: playlist.body.tracks.items.map((track) => track.track.id),
         trackCount: playlist.body.tracks.total,
+        link: playlist.body.external_urls.spotify,
       });
+    },
+    savePlaylist: async (
+      parent,
+      { name, description, images, link },
+      context
+    ) => {
+      try {
+        const user = context.user;
+
+        if (!user) {
+          throw new AuthenticationError(
+            "You must be logged in to save a playlist"
+          );
+        }
+
+        const username = user.data.username;
+
+        const tracks = await Track.find({});
+
+        const playlist = await Playlist.create({
+          name,
+          description,
+          images,
+          tracks,
+          username,
+          link,
+        });
+
+        // add the playlist to the user's playlists
+        await User.findOneAndUpdate(
+          { username },
+          { $addToSet: { playlists: playlist._id } },
+          { new: true }
+        );
+
+        return playlist;
+      } catch (error) {
+        console.error("ERROR saving playlist", error);
+        throw new AuthenticationError("Error saving playlist");
+      }
     },
   },
 };

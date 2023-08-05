@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import SearchResults from "./SearchResults";
-import AppNavbar from "./Navbar";
+import SavePlaylistForm from "./SavePlaylistForm";
 import { useLazyQuery } from "@apollo/client";
 import { GET_OPENAI_RESPONSE, LOGIN_SPOTIFY } from "../utils/queries";
 
@@ -10,7 +10,11 @@ const Searchbar = () => {
 
   const [getOpenAIResponse, { loading }] = useLazyQuery(GET_OPENAI_RESPONSE, {
     onCompleted: (data) => {
+      console.log("OpenAI Response:", data.getOpenAIResponse);
       setResults(data.getOpenAIResponse);
+    },
+    onError: (err) => {
+      console.error(err);
     },
   });
 
@@ -46,7 +50,6 @@ const Searchbar = () => {
     <>
       {loading ? (
         <>
-          <AppNavbar />
           <div className='flex-container'>
             <form id='search' onSubmit={onSubmit}>
               <div>
@@ -85,7 +88,6 @@ const Searchbar = () => {
         </>
       ) : (
         <>
-          <AppNavbar />
           <div className='flex-container'>
             <form id='search' onSubmit={onSubmit}>
               <div>
@@ -108,8 +110,10 @@ const Searchbar = () => {
               LOGIN TO SPOTIFY
             </button>
           </div>
-          {results && (
-            <SearchResults results={results} setResults={setResults} />
+          {results.length && (
+            <>
+              <SearchResults results={results} setResults={setResults} />
+            </>
           )}
         </>
       )}
