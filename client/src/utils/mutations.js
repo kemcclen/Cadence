@@ -8,6 +8,7 @@ export const SEARCH_TRACKS = gql`
       artists
       previewUrl
       link
+      image
     }
   }
 `;
@@ -74,21 +75,39 @@ export const SAVE_PLAYLIST = gql`
     $name: String!
     $description: String
     $images: [String]
-    $link: String
+    $tracks: [TrackInput]
   ) {
     savePlaylist(
       name: $name
       description: $description
       images: $images
-      link: $link
+      tracks: $tracks
     ) {
       _id
       name
       description
       images
-      link
+      tracks {
+        trackId
+        title
+        artists
+        duration
+        previewUrl
+        link
+        image
+        nextTracks {
+          trackId
+          title
+          artists
+          duration
+          previewUrl
+          link
+          image
+        }
+      }
       username
       trackCount
+      link
     }
   }
 `;

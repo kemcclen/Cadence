@@ -15,7 +15,8 @@ const playlistSchema = new Schema({
   ],
   tracks: [
     {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "Track",
     },
   ],
   link: {
@@ -28,7 +29,7 @@ const playlistSchema = new Schema({
 });
 
 playlistSchema.virtual("trackCount").get(function () {
-  return this.tracks.length;
+  return this.tracks ? this.tracks.length : 0;
 });
 
 const Playlist = model("Playlist", playlistSchema);

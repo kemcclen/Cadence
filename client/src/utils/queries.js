@@ -25,11 +25,22 @@ export const GET_USER = gql`
 export const GET_TRACKS = gql`
   query getTracks {
     getTracks {
+      _id
       trackId
       title
       artists
       previewUrl
       link
+      image
+      nextTracks {
+        _id
+        trackId
+        title
+        artists
+        previewUrl
+        link
+        image
+      }
     }
   }
 `;
@@ -50,13 +61,22 @@ export const GET_TRACK_ANALYSIS = gql`
 export const GET_OPENAI_RESPONSE = gql`
   query getOpenAIResponse($length: Int!, $input: String!) {
     getOpenAIResponse(length: $length, input: $input) {
-      id
+      trackId
       title
-      artist
-      album
+      artists
       duration
       previewUrl
+      link
       image
+      nextTracks {
+        trackId
+        title
+        artists
+        duration
+        previewUrl
+        link
+        image
+      }
     }
   }
 `;
@@ -82,9 +102,27 @@ export const GET_USER_PLAYLISTS = gql`
       name
       description
       images
-      tracks
+      tracks {
+        _id
+        trackId
+        title
+        artists
+        previewUrl
+        link
+        image
+        nextTracks {
+          _id
+          trackId
+          title
+          artists
+          previewUrl
+          link
+          image
+        }
+      }
       username
       trackCount
+      link
     }
   }
 `;

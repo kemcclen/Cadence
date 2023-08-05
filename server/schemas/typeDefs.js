@@ -14,10 +14,23 @@ const typeDefs = gql`
     trackId: String
     title: String
     artists: [String]
+    duration: String
     previewUrl: String
     link: String
     image: String
     nextTracks: [Track]
+  }
+
+  input TrackInput {
+    _id: ID
+    trackId: String
+    title: String
+    artists: [String]
+    duration: String
+    previewUrl: String
+    link: String
+    image: String
+    nextTracks: [TrackInput]
   }
 
   type TrackAnalysis {
@@ -45,7 +58,7 @@ const typeDefs = gql`
     name: String
     description: String
     images: [String]
-    tracks: [String]
+    tracks: [Track]
     username: String
     trackCount: Int
     link: String
@@ -78,7 +91,7 @@ const typeDefs = gql`
     thought(thoughtId: ID!): Thought
     getTracks: [Track]
     getTrackAnalysis(trackId: String!): TrackAnalysis
-    getOpenAIResponse(length: Int!, input: String!): [OpenAIResponse]
+    getOpenAIResponse(length: Int!, input: String!): [Track]
     login(username: String!, password: String!): Auth
     loginSpotify: String
     getUserPlaylists: [Playlist]
@@ -107,6 +120,7 @@ const typeDefs = gql`
       name: String!
       description: String
       images: [String]
+      tracks: [TrackInput]
       link: String
     ): Playlist
   }

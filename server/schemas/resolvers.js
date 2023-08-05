@@ -59,6 +59,8 @@ const resolvers = {
       };
     },
     getOpenAIResponse: async (parent, { length, input }) => {
+      await Track.deleteMany({});
+
       const configuration = new Configuration({
         apiKey: process.env.REACT_APP_OPENAI_API_KEY,
       });
@@ -111,21 +113,26 @@ const resolvers = {
             searchResults.body.tracks.items[0].album.images[0].url;
 
           songs[song].uri = searchResults.body.tracks.items[0].uri;
+
+          //get artists as an array
+          songs[song].artists = songs[song].artist.split(",");
         }
 
         let results = [];
 
         // iterate through the songs and create a new array of OpenAIResponse objects
         for (song in songs) {
-          results.push({
-            id: songs[song].uri,
-            title: songs[song].title,
-            artist: songs[song].artist,
-            album: songs[song].album,
-            duration: songs[song].duration,
-            previewUrl: songs[song].previewUrl,
-            image: songs[song].image,
-          });
+          results.push(
+            await Track.create({
+              trackId: songs[song].id,
+              title: songs[song].title,
+              artists: songs[song].artists,
+              duration: songs[song].duration,
+              previewUrl: songs[song].previewUrl,
+              link: songs[song].uri,
+              image: songs[song].image,
+            })
+          );
         }
 
         console.log("RESULTS", results);
@@ -191,7 +198,7 @@ const resolvers = {
 
       const username = user.data.username;
 
-      const playlists = await Playlist.find({ username });
+      const playlists = await Playlist.find({ username }).populate("tracks");
 
       return playlists;
     },
@@ -260,13 +267,10 @@ const resolvers = {
         { new: true }
       );
     },
-    trackSearch: async (parent, { searchTerm }) => {
+    trackSearch: async (parent, { searchTerm }, context) => {
       await Track.deleteMany({});
 
-      const spotifyApi = new SpotifyWebApi({
-        clientId: process.env.REACT_APP_CLIENT_ID,
-        clientSecret: process.env.REACT_APP_CLIENT_SECRET,
-      });
+      const spotifyApi = context.spotifyApi;
 
       const data = await spotifyApi.clientCredentialsGrant();
       console.log("The access token expires in " + data.body["expires_in"]);
@@ -274,8 +278,12 @@ const resolvers = {
 
       // Save the access token so that it's used in future calls
       spotifyApi.setAccessToken(data.body["access_token"]);
+      spotifyApi.setRefreshToken(data.body["refresh_token"]);
+
+      console.log("BEFORE RESULTS");
 
       const searchResults = await spotifyApi.searchTracks(searchTerm);
+      console.log("AFTER RESULTS", searchResults.body.tracks.items[0]);
 
       return await Track.insertMany(
         searchResults.body.tracks.items.map((track) => {
@@ -363,6 +371,8 @@ const resolvers = {
           { $addToSet: { playlists: playlist._id } },
           { new: true }
         );
+
+        console.log("PLAYLIST", playlist);
 
         return playlist;
       } catch (error) {

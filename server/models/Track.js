@@ -11,8 +11,13 @@ const trackSchema = new Schema({
     type: String,
     required: true,
   },
-  artists: {
-    type: Array,
+  artists: [
+    {
+      type: String,
+    },
+  ],
+  duration: {
+    type: String,
   },
   previewUrl: {
     type: String,
