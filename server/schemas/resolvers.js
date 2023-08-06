@@ -58,9 +58,7 @@ const resolvers = {
         duration: audioFeatures.body.duration_ms,
       };
     },
-    getOpenAIResponse: async (parent, { length, input }) => {
-      await Track.deleteMany({});
-
+    getOpenAIResponse: async (parent, { length, input }, context) => {
       const configuration = new Configuration({
         apiKey: process.env.REACT_APP_OPENAI_API_KEY,
       });
@@ -89,16 +87,27 @@ const resolvers = {
         // get the songs from the response
         const songs = JSON.parse(chatCompletion.data.choices[0].text);
 
+        const cookies = context.cookies;
+        let accessToken, refreshToken;
+        if (cookies) {
+          accessToken = cookies.access_token;
+          refreshToken = cookies.refresh_token;
+        }
+
         // get the preview urls for each song
         const spotifyApi = new SpotifyWebApi({
           clientId: process.env.REACT_APP_CLIENT_ID,
           clientSecret: process.env.REACT_APP_CLIENT_SECRET,
+          accessToken,
+          refreshToken,
         });
 
-        // Ensure we have a valid access token before making the API call
-        const data = await spotifyApi.clientCredentialsGrant();
-        spotifyApi.setAccessToken(data.body["access_token"]);
-        spotifyApi.setRefreshToken(data.body["refresh_token"]);
+        if (!accessToken || !refreshToken) {
+          // Ensure we have a valid access token before making the API call
+          const data = await spotifyApi.clientCredentialsGrant();
+          spotifyApi.setAccessToken(data.body["access_token"]);
+          spotifyApi.setRefreshToken(data.body["refresh_token"]);
+        }
 
         // iterate through the songs and add the preview url, image, and uri of each song
         for (song in songs) {
@@ -122,17 +131,14 @@ const resolvers = {
 
         // iterate through the songs and create a new array of OpenAIResponse objects
         for (song in songs) {
-          results.push(
-            await Track.create({
-              trackId: songs[song].id,
-              title: songs[song].title,
-              artists: songs[song].artists,
-              duration: songs[song].duration,
-              previewUrl: songs[song].previewUrl,
-              link: songs[song].uri,
-              image: songs[song].image,
-            })
-          );
+          results.push({
+            title: songs[song].title,
+            artists: songs[song].artists,
+            duration: songs[song].duration,
+            previewUrl: songs[song].previewUrl,
+            link: songs[song].uri,
+            image: songs[song].image,
+          });
         }
 
         console.log("RESULTS", results);
@@ -171,7 +177,7 @@ const resolvers = {
 
       return { token, user };
     },
-    loginSpotify: async () => {
+    loginSpotify: async (_, args, context) => {
       const state = generateRandomString(16);
       const scopes = "playlist-modify-public playlist-modify-private";
 
@@ -303,7 +309,46 @@ const resolvers = {
       { name, description, image, tracks },
       context
     ) => {
-      const spotifyApi = context.spotifyApi;
+      const user = context.user;
+
+      if (!user) {
+        throw new AuthenticationError(
+          "You must be logged in to create a playlist"
+        );
+      }
+
+      const cookies = context.cookies;
+      console.log("COOKIES", cookies);
+      let accessToken, refreshToken;
+      if (cookies) {
+        accessToken = cookies.access_token;
+        refreshToken = cookies.refresh_token;
+      }
+
+      if (!accessToken || !refreshToken) {
+        throw new AuthenticationError(
+          "You must be authenticated to create a playlist"
+        );
+      }
+
+      const spotifyApi = new SpotifyWebApi({
+        clientId: process.env.REACT_APP_CLIENT_ID,
+        clientSecret: process.env.REACT_APP_CLIENT_SECRET,
+        redirectUri: "http://localhost:3001/callback",
+        accessToken,
+        refreshToken,
+      });
+
+      // Ensure we have a valid access token before making the API call
+      spotifyApi.refreshAccessToken().then(
+        (data) => {
+          console.log("The access token has been refreshed!");
+          spotifyApi.setAccessToken(data.body["access_token"]);
+        },
+        (err) => {
+          console.log("Could not refresh access token", err);
+        }
+      );
 
       const playlist = await spotifyApi.createPlaylist(name, {
         description,
@@ -324,23 +369,21 @@ const resolvers = {
       }
 
       if (tracks) {
-        const tracksToAdd = tracks.map((track) => track.trackId);
+        const tracksToAdd = tracks.map((track) => track.link);
         await spotifyApi.addTracksToPlaylist(playlistId, tracksToAdd);
       }
 
-      return await Playlist.create({
-        id: playlistId,
+      return {
         name: playlist.body.name,
         description: playlist.body.description,
-        image: playlist.body.images[0],
-        tracks: playlist.body.tracks.items.map((track) => track.track.id),
-        trackCount: playlist.body.tracks.total,
-        link: playlist.body.external_urls.spotify,
-      });
+        images: playlist.body.images,
+        tracks: tracks,
+        username: user.data.username,
+      };
     },
     savePlaylist: async (
       parent,
-      { name, description, images, link },
+      { name, description, images, tracks },
       context
     ) => {
       try {
@@ -354,7 +397,7 @@ const resolvers = {
 
         const username = user.data.username;
 
-        const tracks = await Track.find({});
+        console.log("TRACKS", tracks);
 
         const playlist = await Playlist.create({
           name,
@@ -362,7 +405,6 @@ const resolvers = {
           images,
           tracks,
           username,
-          link,
         });
 
         // add the playlist to the user's playlists

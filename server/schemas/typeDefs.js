@@ -11,7 +11,6 @@ const typeDefs = gql`
 
   type Track {
     _id: ID
-    trackId: String
     title: String
     artists: [String]
     duration: String
@@ -23,7 +22,6 @@ const typeDefs = gql`
 
   input TrackInput {
     _id: ID
-    trackId: String
     title: String
     artists: [String]
     duration: String
@@ -35,7 +33,6 @@ const typeDefs = gql`
 
   type TrackAnalysis {
     _id: ID
-    trackId: String
     danceability: Float
     energy: Float
     key: Int
@@ -114,7 +111,7 @@ const typeDefs = gql`
       name: String!
       description: String
       image: String
-      tracks: [String]
+      tracks: [TrackInput]
     ): Playlist
     savePlaylist(
       name: String!

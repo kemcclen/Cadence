@@ -1,14 +1,34 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { Navbar, Nav, Container, Modal, Tab } from "react-bootstrap";
+import { Navbar, Nav, Container, Modal, Tab, Button } from "react-bootstrap";
+import { useLazyQuery } from "@apollo/client";
+import { LOGIN_SPOTIFY } from "../utils/queries";
+import { useCookies } from "react-cookie";
 import SignUpForm from "../component/signup";
 import LoginForm from "../component/login";
-
 import Auth from "../utils/auth";
 
 const AppNavbar = () => {
   // set modal display state
   const [showModal, setShowModal] = useState(false);
+  const [cookies, setCookie] = useCookies(["access_token", "refresh_token"]);
+
+  const [loginSpotify] = useLazyQuery(LOGIN_SPOTIFY, {
+    onCompleted: (data) => {
+      console.log("Login URL generated:", data.loginSpotify);
+      window.location.href = data.loginSpotify;
+    },
+  });
+
+  const handleSpotifyLogin = async (e) => {
+    e.preventDefault();
+
+    try {
+      await loginSpotify();
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   return (
     <>
@@ -26,6 +46,14 @@ const AppNavbar = () => {
               {/* if user is logged in show saved books and logout */}
               {Auth.loggedIn() ? (
                 <>
+                  {(!cookies.access_token || !cookies.refresh_token) && (
+                    <Button
+                      className='btn btn-success'
+                      onClick={handleSpotifyLogin}
+                    >
+                      Login to Spotify
+                    </Button>
+                  )}
                   <Nav.Link as={Link} to='/playlists'>
                     See Your Playlists
                   </Nav.Link>

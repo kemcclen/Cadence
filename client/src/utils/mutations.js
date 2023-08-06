@@ -3,7 +3,6 @@ import { gql } from "@apollo/client";
 export const SEARCH_TRACKS = gql`
   mutation trackSearch($searchTerm: String!) {
     trackSearch(searchTerm: $searchTerm) {
-      trackId
       title
       artists
       previewUrl
@@ -51,7 +50,7 @@ export const CREATE_SPOTIFY_PLAYLIST = gql`
     $name: String!
     $description: String
     $image: String
-    $tracks: [String]
+    $tracks: [TrackInput]
   ) {
     createSpotifyPlaylist(
       name: $name
@@ -59,13 +58,26 @@ export const CREATE_SPOTIFY_PLAYLIST = gql`
       image: $image
       tracks: $tracks
     ) {
-      id
+      _id
       name
       description
-      image
-      tracks
-      username
-      trackCount
+      images
+      tracks {
+        title
+        artists
+        duration
+        previewUrl
+        link
+        image
+        nextTracks {
+          title
+          artists
+          duration
+          previewUrl
+          link
+          image
+        }
+      }
     }
   }
 `;
@@ -76,19 +88,20 @@ export const SAVE_PLAYLIST = gql`
     $description: String
     $images: [String]
     $tracks: [TrackInput]
+    $link: String
   ) {
     savePlaylist(
       name: $name
       description: $description
       images: $images
       tracks: $tracks
+      link: $link
     ) {
       _id
       name
       description
       images
       tracks {
-        trackId
         title
         artists
         duration
@@ -96,7 +109,6 @@ export const SAVE_PLAYLIST = gql`
         link
         image
         nextTracks {
-          trackId
           title
           artists
           duration

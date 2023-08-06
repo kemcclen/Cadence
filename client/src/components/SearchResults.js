@@ -27,7 +27,7 @@ const SearchResults = ({ results, setResults }) => {
 
   return (
     <>
-      <div className='container'>
+      <div className='container d-flex align-items-start justify-content-center'>
         <div className='row'>
           <div className='col-12'>
             <Playlist playlist={results} />

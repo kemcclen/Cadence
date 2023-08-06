@@ -1,44 +1,35 @@
 import React, { useState } from "react";
 import SearchResults from "./SearchResults";
 import { useLazyQuery } from "@apollo/client";
-import { GET_OPENAI_RESPONSE, LOGIN_SPOTIFY } from "../utils/queries";
+import { GET_OPENAI_RESPONSE } from "../utils/queries";
 
 const Searchbar = () => {
   const [search, setSearch] = useState("");
-  const [results, setResults] = useState([]);
+  const [results, setResults] = useState(
+    JSON.parse(localStorage.getItem("results")) || []
+  );
+  const [length, setLength] = useState(10);
 
   const [getOpenAIResponse, { loading }] = useLazyQuery(GET_OPENAI_RESPONSE, {
     onCompleted: (data) => {
       console.log("OpenAI Response:", data.getOpenAIResponse);
       setResults(data.getOpenAIResponse);
+      localStorage.setItem("results", JSON.stringify(data.getOpenAIResponse));
     },
     onError: (err) => {
       console.error(err);
     },
   });
 
-  const [loginSpotify] = useLazyQuery(LOGIN_SPOTIFY);
-
-  const handleClick = async (e) => {
-    e.preventDefault();
-
-    try {
-      await loginSpotify({
-        onCompleted: (data) => {
-          console.log("Login Successful!", data.loginSpotify);
-          window.location.href = data.loginSpotify;
-        },
-      });
-    } catch (err) {
-      console.error(err);
-    }
+  const handleLength = (e) => {
+    setLength(parseInt(e.target.value));
   };
 
   const onSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      await getOpenAIResponse({ variables: { length: 10, input: search } });
+      await getOpenAIResponse({ variables: { length, input: search } });
       setSearch("");
     } catch (err) {
       console.error(err);
@@ -66,11 +57,19 @@ const Searchbar = () => {
                   type='submit'
                 ></input>
               </div>
+              <label htmlFor='length'>Length of Playlist</label>
+              <select name='length' id='length' onChange={handleLength}>
+                <option value='10'>10</option>
+                <option value='20'>20</option>
+                <option value='30'>30</option>
+                <option value='40'>40</option>
+                <option value='50'>50</option>
+              </select>
             </form>
           </div>
-          <div className='container'>
+          <div className='container d-flex justify-content-center align-items-start mt-5'>
             <div className='row'>
-              <div className='col-12 d-flex justify-content-center align-items-center mt-5'>
+              <div className='col-12'>
                 <div
                   className='spinner-border'
                   style={{ zIndex: 100 }}
@@ -104,10 +103,15 @@ const Searchbar = () => {
                   type='submit'
                 ></input>
               </div>
+              <label htmlFor='length'>Length of Playlist</label>
+              <select name='length' id='length' onChange={handleLength}>
+                <option value='10'>10</option>
+                <option value='20'>20</option>
+                <option value='30'>30</option>
+                <option value='40'>40</option>
+                <option value='50'>50</option>
+              </select>
             </form>
-            <button className='btn-submit' onClick={handleClick}>
-              LOGIN TO SPOTIFY
-            </button>
           </div>
           {results.length && (
             <>

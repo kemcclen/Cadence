@@ -15,8 +15,29 @@ const playlistSchema = new Schema({
   ],
   tracks: [
     {
-      type: Schema.Types.ObjectId,
-      ref: "Track",
+      title: {
+        type: String,
+      },
+      artists: [
+        {
+          type: String,
+        },
+      ],
+      duration: {
+        type: String,
+      },
+      previewUrl: {
+        type: String,
+      },
+      link: {
+        type: String,
+      },
+      image: {
+        type: String,
+      },
+      nextTracks: {
+        type: Array,
+      },
     },
   ],
   link: {
