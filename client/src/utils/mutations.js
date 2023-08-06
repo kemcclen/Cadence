@@ -123,3 +123,33 @@ export const SAVE_PLAYLIST = gql`
     }
   }
 `;
+
+export const DELETE_PLAYLIST = gql`
+  mutation deletePlaylist($playlistId: ID!) {
+    deletePlaylist(playlistId: $playlistId) {
+      _id
+      name
+      description
+      images
+      tracks {
+        title
+        artists
+        duration
+        previewUrl
+        link
+        image
+        nextTracks {
+          title
+          artists
+          duration
+          previewUrl
+          link
+          image
+        }
+      }
+      username
+      trackCount
+      link
+    }
+  }
+`;

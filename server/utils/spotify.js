@@ -29,7 +29,6 @@ const handleSpotifyCallback = async (req, res) => {
     });
     res.cookie("refresh_token", refreshToken, {
       httpOnly: false,
-      maxAge: expiresIn * 1000,
     });
 
     // Redirect to the React app

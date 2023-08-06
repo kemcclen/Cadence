@@ -120,6 +120,7 @@ const typeDefs = gql`
       tracks: [TrackInput]
       link: String
     ): Playlist
+    deletePlaylist(playlistId: ID!): Playlist
   }
 `;
 

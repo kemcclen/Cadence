@@ -80,7 +80,8 @@ const resolvers = {
             "album": "The Beatles (White Album)",
             "duration": "4:56"
         }
-      ]".`,
+      ]
+      Don't include any duplicates.".`,
           temperature: 0,
           max_tokens: 3000,
         });
@@ -112,7 +113,7 @@ const resolvers = {
         // iterate through the songs and add the preview url, image, and uri of each song
         for (song in songs) {
           const searchResults = await spotifyApi.searchTracks(
-            songs[song].title + " " + songs[song].artist
+            "track:" + songs[song].title + " " + "artist:" + songs[song].artist
           );
 
           songs[song].previewUrl =
@@ -129,7 +130,7 @@ const resolvers = {
 
         let results = [];
 
-        // iterate through the songs and create a new array of OpenAIResponse objects
+        // iterate through the songs and create a new array of Track objects
         for (song in songs) {
           results.push({
             title: songs[song].title,
@@ -421,6 +422,30 @@ const resolvers = {
         console.error("ERROR saving playlist", error);
         throw new AuthenticationError("Error saving playlist");
       }
+    },
+    deletePlaylist: async (parent, { playlistId }, context) => {
+      const user = context.user;
+
+      if (!user) {
+        throw new AuthenticationError(
+          "You must be logged in to delete a playlist"
+        );
+      }
+
+      const username = user.data.username;
+
+      const playlist = await Playlist.findOneAndDelete({
+        _id: playlistId,
+        username,
+      });
+
+      if (!playlist) {
+        throw new AuthenticationError(
+          "You must be logged in to delete a playlist"
+        );
+      }
+
+      return playlist;
     },
   },
 };
