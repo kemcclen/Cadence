@@ -46,7 +46,7 @@ const AppNavbar = () => {
               {/* if user is logged in show saved books and logout */}
               {Auth.loggedIn() ? (
                 <>
-                  {(!cookies.access_token || !cookies.refresh_token) && (
+                  {(!cookies.refresh_token || !cookies.access_token) && (
                     <Button
                       className='btn btn-success'
                       onClick={handleSpotifyLogin}

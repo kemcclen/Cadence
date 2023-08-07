@@ -13,8 +13,14 @@ const Searchbar = () => {
   const [getOpenAIResponse, { loading }] = useLazyQuery(GET_OPENAI_RESPONSE, {
     onCompleted: (data) => {
       console.log("OpenAI Response:", data.getOpenAIResponse);
-      setResults(data.getOpenAIResponse);
-      localStorage.setItem("results", JSON.stringify(data.getOpenAIResponse));
+
+      if (data.getOpenAIResponse) {
+        setResults(data.getOpenAIResponse);
+        localStorage.setItem("results", JSON.stringify(data.getOpenAIResponse));
+      } else {
+        setResults([]);
+        localStorage.setItem("results", JSON.stringify([]));
+      }
     },
     onError: (err) => {
       console.error(err);

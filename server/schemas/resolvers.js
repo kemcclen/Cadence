@@ -103,7 +103,19 @@ const resolvers = {
           refreshToken,
         });
 
-        if (!accessToken || !refreshToken) {
+        if (!spotifyApi.getAccessToken() && refreshToken) {
+          spotifyApi.refreshAccessToken().then(
+            (data) => {
+              console.log("The access token has been refreshed!");
+              spotifyApi.setAccessToken(data.body["access_token"]);
+            },
+            (err) => {
+              console.log("Could not refresh access token", err);
+            }
+          );
+        }
+
+        if (!spotifyApi.getAccessToken()) {
           // Ensure we have a valid access token before making the API call
           const data = await spotifyApi.clientCredentialsGrant();
           spotifyApi.setAccessToken(data.body["access_token"]);
@@ -113,7 +125,7 @@ const resolvers = {
         // iterate through the songs and add the preview url, image, and uri of each song
         for (song in songs) {
           const searchResults = await spotifyApi.searchTracks(
-            "track:" + songs[song].title + " " + "artist:" + songs[song].artist
+            songs[song].title + " " + songs[song].artist
           );
 
           songs[song].previewUrl =
