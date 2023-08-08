@@ -6,22 +6,33 @@ const typeDefs = gql`
     username: String
     email: String
     password: String
-    thoughts: [Thought]!
+    playlists: [Playlist]
   }
 
   type Track {
     _id: ID
-    trackId: String
     title: String
     artists: [String]
+    duration: String
     previewUrl: String
     link: String
+    image: String
     nextTracks: [Track]
+  }
+
+  input TrackInput {
+    _id: ID
+    title: String
+    artists: [String]
+    duration: String
+    previewUrl: String
+    link: String
+    image: String
+    nextTracks: [TrackInput]
   }
 
   type TrackAnalysis {
     _id: ID
-    trackId: String
     danceability: Float
     energy: Float
     key: Int
@@ -37,6 +48,17 @@ const typeDefs = gql`
     duration: String
     previewUrl: String
     image: String
+  }
+
+  type Playlist {
+    _id: ID
+    name: String
+    description: String
+    images: [String]
+    tracks: [Track]
+    username: String
+    trackCount: Int
+    link: String
   }
 
   type Thought {
@@ -66,14 +88,16 @@ const typeDefs = gql`
     thought(thoughtId: ID!): Thought
     getTracks: [Track]
     getTrackAnalysis(trackId: String!): TrackAnalysis
-    getOpenAIResponse(length: Int!, input: String!): [OpenAIResponse]
+    getOpenAIResponse(length: Int!, input: String!): [Track]
+    login(username: String!, password: String!): Auth
+    loginSpotify: String
+    getUserPlaylists: [Playlist]
   }
 
   type Mutation {
-    addUser(username: String!, email: String!, password: String!): Auth
+    addUser(username: String!, password: String!): Auth
     updateUser(username: String!, email: String!, password: String!): Auth
     deleteUser(username: String!): User
-    login(email: String!, password: String!): Auth
     addThought(thoughtText: String!, thoughtAuthor: String!): Thought
     addComment(
       thoughtId: ID!
@@ -83,6 +107,20 @@ const typeDefs = gql`
     removeThought(thoughtId: ID!): Thought
     removeComment(thoughtId: ID!, commentId: ID!): Thought
     trackSearch(searchTerm: String!): [Track]
+    createSpotifyPlaylist(
+      name: String!
+      description: String
+      image: String
+      tracks: [TrackInput]
+    ): Playlist
+    savePlaylist(
+      name: String!
+      description: String
+      images: [String]
+      tracks: [TrackInput]
+      link: String
+    ): Playlist
+    deletePlaylist(playlistId: ID!): Playlist
   }
 `;
 

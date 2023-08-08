@@ -1,17 +1,31 @@
 const { AuthenticationError } = require("apollo-server-express");
-const { User, Thought, Track } = require("../models");
+const { User, Thought, Track, Playlist } = require("../models");
 const { signToken } = require("../utils/auth");
 const SpotifyWebApi = require("spotify-web-api-node");
+const querystring = require("querystring");
 const { Configuration, OpenAIApi } = require("openai");
 require("dotenv").config();
+
+// Helper function to generate a random string for the state parameter
+const generateRandomString = (length) => {
+  let text = "";
+  const possible =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+
+  for (let i = 0; i < length; i += 1) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+
+  return text;
+};
 
 const resolvers = {
   Query: {
     users: async () => {
-      return User.find().populate("thoughts");
+      return User.find().populate("playlists");
     },
     user: async (parent, { username }) => {
-      return User.findOne({ username }).populate("thoughts");
+      return User.findOne({ username }).populate("playlists");
     },
     thoughts: async (parent, { username }) => {
       const params = username ? { username } : {};
@@ -44,7 +58,7 @@ const resolvers = {
         duration: audioFeatures.body.duration_ms,
       };
     },
-    getOpenAIResponse: async (parent, { length, input }) => {
+    getOpenAIResponse: async (parent, { length, input }, context) => {
       const configuration = new Configuration({
         apiKey: process.env.REACT_APP_OPENAI_API_KEY,
       });
@@ -66,24 +80,49 @@ const resolvers = {
             "album": "The Beatles (White Album)",
             "duration": "4:56"
         }
-      ]".`,
+      ]
+      Don't include any duplicates.".`,
           temperature: 0,
           max_tokens: 3000,
         });
         // get the songs from the response
         const songs = JSON.parse(chatCompletion.data.choices[0].text);
 
+        const cookies = context.cookies;
+        let accessToken, refreshToken;
+        if (cookies) {
+          accessToken = cookies.access_token;
+          refreshToken = cookies.refresh_token;
+        }
+
         // get the preview urls for each song
         const spotifyApi = new SpotifyWebApi({
           clientId: process.env.REACT_APP_CLIENT_ID,
           clientSecret: process.env.REACT_APP_CLIENT_SECRET,
+          accessToken,
+          refreshToken,
         });
 
-        // Ensure we have a valid access token before making the API call
-        const data = await spotifyApi.clientCredentialsGrant();
-        spotifyApi.setAccessToken(data.body["access_token"]);
+        if (!spotifyApi.getAccessToken() && refreshToken) {
+          spotifyApi.refreshAccessToken().then(
+            (data) => {
+              console.log("The access token has been refreshed!");
+              spotifyApi.setAccessToken(data.body["access_token"]);
+            },
+            (err) => {
+              console.log("Could not refresh access token", err);
+            }
+          );
+        }
 
-        // iterate through the songs and add the preview url and image to each song
+        if (!spotifyApi.getAccessToken()) {
+          // Ensure we have a valid access token before making the API call
+          const data = await spotifyApi.clientCredentialsGrant();
+          spotifyApi.setAccessToken(data.body["access_token"]);
+          spotifyApi.setRefreshToken(data.body["refresh_token"]);
+        }
+
+        // iterate through the songs and add the preview url, image, and uri of each song
         for (song in songs) {
           const searchResults = await spotifyApi.searchTracks(
             songs[song].title + " " + songs[song].artist
@@ -94,24 +133,26 @@ const resolvers = {
 
           songs[song].image =
             searchResults.body.tracks.items[0].album.images[0].url;
+
+          songs[song].uri = searchResults.body.tracks.items[0].uri;
+
+          //get artists as an array
+          songs[song].artists = songs[song].artist.split(",");
         }
 
         let results = [];
 
-        // iterate through the songs and create a new array of OpenAIResponse objects
+        // iterate through the songs and create a new array of Track objects
         for (song in songs) {
           results.push({
-            id: songs[song].id,
             title: songs[song].title,
-            artist: songs[song].artist,
-            album: songs[song].album,
+            artists: songs[song].artists,
             duration: songs[song].duration,
             previewUrl: songs[song].previewUrl,
+            link: songs[song].uri,
             image: songs[song].image,
           });
         }
-
-        console.log("RESULTS", results);
 
         return results;
       } catch (error) {
@@ -124,53 +165,73 @@ const resolvers = {
         }
       }
     },
-    // const payload = {
-    //   temperature: 0,
-    //   max_tokens: 3000,
-    //   model: "text-davinci-003",
-    //   prompt: `You are an assistant that only responds in JSON.
-    // Create a list of ${length} unique songs based off the following
-    // statement: "${input}". Include "id", "title", "artist", "album"
-    // in your response. An example response is: "
-    // [
-    //   {
-    //       "id": 1,
-    //       "title": "Hey Jude",
-    //       "artist": "The Beatles",
-    //       "album": "The Beatles (White Album)",
-    //       "duration": "4:56"
-    //   }
-    // ]".`,
-    // };
-    // const response = await fetch("https://api.openai.com/v1/completions", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: `Bearer ${process.env.REACT_APP_OPENAI_API_KEY}`,
-    //   },
-    //   body: JSON.stringify(payload),
-    // })
-    //   .then((res) => {
-    //     if (res.status === 200) {
-    //       console.log("res", JSON.parse(res.body));
-    //       const songs = JSON.parse(res.body);
-    //       console.log(songs);
-    //       console.log(typeof songs);
-    //       return songs;
-    //     }
-    //   })
-    //   .catch((err) => console.log(err));
+    login: async (parent, { username, password }) => {
+      const user = await User.findOne({ username });
+
+      if (!user) {
+        throw new AuthenticationError(
+          "No user found with this username/email address"
+        );
+      }
+
+      console.log("USER", user);
+
+      const correctPw = await user.isCorrectPassword(password);
+
+      if (!correctPw) {
+        throw new AuthenticationError("Incorrect credentials");
+      }
+
+      const token = signToken(user);
+
+      console.log("TOKEN", token);
+
+      return { token, user };
+    },
+    loginSpotify: async (_, args, context) => {
+      const state = generateRandomString(16);
+      const scopes = "playlist-modify-public playlist-modify-private";
+
+      const authURL =
+        "https://accounts.spotify.com/authorize?" +
+        querystring.stringify({
+          response_type: "code",
+          client_id: process.env.REACT_APP_CLIENT_ID,
+          scope: scopes,
+          redirect_uri: "http://localhost:3001/callback",
+          state: state,
+        });
+
+      return authURL;
+    },
+    getUserPlaylists: async (parent, args, context) => {
+      const user = context.user;
+
+      if (!user) {
+        throw new AuthenticationError(
+          "You must be logged in to get a user's playlists"
+        );
+      }
+
+      const username = user.data.username;
+
+      const playlists = await Playlist.find({ username }).populate("tracks");
+
+      return playlists;
+    },
   },
   Mutation: {
-    addUser: async (parent, { username, email, password }) => {
-      const user = await User.create({ username, email, password });
+    addUser: async (parent, { username, password }) => {
+      const user = await User.create({ username, password });
+
+      console.log("USER", user);
       const token = signToken(user);
       return { token, user };
     },
-    updateUser: async (parent, { username, email, password }) => {
+    updateUser: async (parent, { username, password }) => {
       const user = await User.findOneAndUpdate(
         { username },
-        { email, password },
+        { password },
         { new: true }
       );
 
@@ -190,23 +251,6 @@ const resolvers = {
       }
 
       return user;
-    },
-    login: async (parent, { email, password }) => {
-      const user = await User.findOne({ email });
-
-      if (!user) {
-        throw new AuthenticationError("No user found with this email address");
-      }
-
-      const correctPw = await user.isCorrectPassword(password);
-
-      if (!correctPw) {
-        throw new AuthenticationError("Incorrect credentials");
-      }
-
-      const token = signToken(user);
-
-      return { token, user };
     },
     addThought: async (parent, { thoughtText, thoughtAuthor }) => {
       const thought = await Thought.create({ thoughtText, thoughtAuthor });
@@ -240,13 +284,10 @@ const resolvers = {
         { new: true }
       );
     },
-    trackSearch: async (parent, { searchTerm }) => {
+    trackSearch: async (parent, { searchTerm }, context) => {
       await Track.deleteMany({});
 
-      const spotifyApi = new SpotifyWebApi({
-        clientId: process.env.REACT_APP_CLIENT_ID,
-        clientSecret: process.env.REACT_APP_CLIENT_SECRET,
-      });
+      const spotifyApi = context.spotifyApi;
 
       const data = await spotifyApi.clientCredentialsGrant();
       console.log("The access token expires in " + data.body["expires_in"]);
@@ -254,8 +295,12 @@ const resolvers = {
 
       // Save the access token so that it's used in future calls
       spotifyApi.setAccessToken(data.body["access_token"]);
+      spotifyApi.setRefreshToken(data.body["refresh_token"]);
+
+      console.log("BEFORE RESULTS");
 
       const searchResults = await spotifyApi.searchTracks(searchTerm);
+      console.log("AFTER RESULTS", searchResults.body.tracks.items[0]);
 
       return await Track.insertMany(
         searchResults.body.tracks.items.map((track) => {
@@ -265,9 +310,152 @@ const resolvers = {
             artists: track.artists.map((artist) => artist.name),
             previewUrl: track.preview_url,
             link: track.external_urls.spotify,
+            image: track.album.images[0].url,
           };
         })
       );
+    },
+    createSpotifyPlaylist: async (
+      parent,
+      { name, description, image, tracks },
+      context
+    ) => {
+      const user = context.user;
+
+      if (!user) {
+        throw new AuthenticationError(
+          "You must be logged in to create a playlist"
+        );
+      }
+
+      const cookies = context.cookies;
+      console.log("COOKIES", cookies);
+      let accessToken, refreshToken;
+      if (cookies) {
+        accessToken = cookies.access_token;
+        refreshToken = cookies.refresh_token;
+      }
+
+      if (!accessToken || !refreshToken) {
+        throw new AuthenticationError(
+          "You must be authenticated to create a playlist"
+        );
+      }
+
+      const spotifyApi = new SpotifyWebApi({
+        clientId: process.env.REACT_APP_CLIENT_ID,
+        clientSecret: process.env.REACT_APP_CLIENT_SECRET,
+        redirectUri: "http://localhost:3001/callback",
+        accessToken,
+        refreshToken,
+      });
+
+      // Ensure we have a valid access token before making the API call
+      spotifyApi.refreshAccessToken().then(
+        (data) => {
+          console.log("The access token has been refreshed!");
+          spotifyApi.setAccessToken(data.body["access_token"]);
+        },
+        (err) => {
+          console.log("Could not refresh access token", err);
+        }
+      );
+
+      const playlist = await spotifyApi.createPlaylist(name, {
+        description,
+      });
+
+      if (!playlist) {
+        throw new AuthenticationError(
+          "You must be authenticated to create a playlist"
+        );
+      }
+
+      const playlistId = playlist.body.id;
+
+      console.log("PLAYLIST", playlist.body);
+
+      if (image) {
+        await spotifyApi.uploadCustomPlaylistCoverImage(playlistId, image);
+      }
+
+      if (tracks) {
+        const tracksToAdd = tracks.map((track) => track.link);
+        await spotifyApi.addTracksToPlaylist(playlistId, tracksToAdd);
+      }
+
+      return {
+        name: playlist.body.name,
+        description: playlist.body.description,
+        images: playlist.body.images,
+        tracks: tracks,
+        username: user.data.username,
+      };
+    },
+    savePlaylist: async (
+      parent,
+      { name, description, images, tracks },
+      context
+    ) => {
+      try {
+        const user = context.user;
+
+        if (!user) {
+          throw new AuthenticationError(
+            "You must be logged in to save a playlist"
+          );
+        }
+
+        const username = user.data.username;
+
+        console.log("TRACKS", tracks);
+
+        const playlist = await Playlist.create({
+          name,
+          description,
+          images,
+          tracks,
+          username,
+        });
+
+        // add the playlist to the user's playlists
+        await User.findOneAndUpdate(
+          { username },
+          { $addToSet: { playlists: playlist._id } },
+          { new: true }
+        );
+
+        console.log("PLAYLIST", playlist);
+
+        return playlist;
+      } catch (error) {
+        console.error("ERROR saving playlist", error);
+        throw new AuthenticationError("Error saving playlist");
+      }
+    },
+    deletePlaylist: async (parent, { playlistId }, context) => {
+      const user = context.user;
+
+      if (!user) {
+        throw new AuthenticationError(
+          "You must be logged in to delete a playlist"
+        );
+      }
+
+      const username = user.data.username;
+
+      const playlist = await Playlist.findOneAndDelete({
+        _id: playlistId,
+        username,
+      });
+
+      if (!playlist) {
+        throw new AuthenticationError(
+          "You must be logged in to delete a playlist"
+        );
+      }
+
+      return playlist;
     },
   },
 };

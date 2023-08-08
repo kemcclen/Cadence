@@ -1,39 +1,50 @@
-const express = require('express');
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
-const router = express.Router();
+// use this to decode a token and get the user's information out of it
+import decode from "jwt-decode";
 
-
-router.post('/login', async (req, res) => {
-  const { email, password } = req.body;
-  const user = await User.findOne({ email });
-
-  if (!user || !bcrypt.compareSync(password, user.password)) {
-    return res.status(401).json({ error: 'Invalid email or password' });
+// create a new class to instantiate for a user
+class AuthService {
+  // get user data
+  getProfile() {
+    return decode(this.getToken());
   }
 
-  const token = jwt.sign({ userId: user._id }, 'YOUR_SECRET_KEY');
-  res.json({ token });
-});
+  // check if user's logged in
+  loggedIn() {
+    // Checks if there is a saved token and it's still valid
+    const token = this.getToken();
+    return !!token && !this.isTokenExpired(token); // handwaiving here
+  }
 
-router.post('/signup', async (req, res) => {
-  try {
-    const { email, password } = req.body;
-
-    if (await User.findOne({ email })) {
-      return res.status(400).json({ error: 'Email already exists' });
+  // check if token is expired
+  isTokenExpired(token) {
+    try {
+      const decoded = decode(token);
+      if (decoded.exp < Date.now() / 1000) {
+        return true;
+      } else return false;
+    } catch (err) {
+      return false;
     }
-
-    const hashedPassword = bcrypt.hashSync(password, 10);
-    const user = new User({ email, password: hashedPassword });
-
-    await user.save();
-    res.status(201).json({ message: 'User created' });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Something went wrong' });
   }
-});
 
+  getToken() {
+    // Retrieves the user token from localStorage
+    return localStorage.getItem("id_token");
+  }
 
-module.exports = router;
+  login(idToken) {
+    // Saves user token to localStorage
+    localStorage.setItem("id_token", idToken);
+    window.location.assign("/");
+  }
+
+  logout() {
+    // Clear user token, profile data, and search results from localStorage
+    localStorage.removeItem("id_token");
+    localStorage.removeItem("results");
+    // this will reload the page and reset the state of the application
+    window.location.assign("/");
+  }
+}
+
+export default new AuthService();

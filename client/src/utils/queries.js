@@ -25,11 +25,20 @@ export const GET_USER = gql`
 export const GET_TRACKS = gql`
   query getTracks {
     getTracks {
-      trackId
+      _id
       title
       artists
       previewUrl
       link
+      image
+      nextTracks {
+        _id
+        title
+        artists
+        previewUrl
+        link
+        image
+      }
     }
   }
 `;
@@ -50,13 +59,66 @@ export const GET_TRACK_ANALYSIS = gql`
 export const GET_OPENAI_RESPONSE = gql`
   query getOpenAIResponse($length: Int!, $input: String!) {
     getOpenAIResponse(length: $length, input: $input) {
-      id
       title
-      artist
-      album
+      artists
       duration
       previewUrl
+      link
       image
+      nextTracks {
+        title
+        artists
+        duration
+        previewUrl
+        link
+        image
+      }
+    }
+  }
+`;
+
+export const LOGIN_USER = gql`
+  query login($username: String!, $password: String!) {
+    login(username: $username, password: $password) {
+      token
+    }
+  }
+`;
+
+export const LOGIN_SPOTIFY = gql`
+  query loginSpotify {
+    loginSpotify
+  }
+`;
+
+export const GET_USER_PLAYLISTS = gql`
+  query getUserPlaylists {
+    getUserPlaylists {
+      _id
+      name
+      description
+      images
+      tracks {
+        _id
+        title
+        artists
+        duration
+        previewUrl
+        link
+        image
+        nextTracks {
+          _id
+          title
+          artists
+          duration
+          previewUrl
+          link
+          image
+        }
+      }
+      username
+      trackCount
+      link
     }
   }
 `;
