@@ -154,8 +154,6 @@ const resolvers = {
           });
         }
 
-        console.log("RESULTS", results);
-
         return results;
       } catch (error) {
         if (error.response) {

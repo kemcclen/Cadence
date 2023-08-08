@@ -15,7 +15,7 @@ const AppNavbar = () => {
 
   const [loginSpotify] = useLazyQuery(LOGIN_SPOTIFY, {
     onCompleted: (data) => {
-      console.log("Login URL generated:", data.loginSpotify);
+      console.log("Spotify login URL generated:", data.loginSpotify);
       window.location.href = data.loginSpotify;
     },
   });
@@ -43,7 +43,7 @@ const AppNavbar = () => {
               <Nav.Link as={Link} to='/'>
                 AI Playlist
               </Nav.Link>
-              {/* if user is logged in show saved books and logout */}
+              {/* if user is logged in show saved playlists and logout */}
               {Auth.loggedIn() ? (
                 <>
                   {(!cookies.refresh_token || !cookies.access_token) && (
