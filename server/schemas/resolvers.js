@@ -165,8 +165,8 @@ const resolvers = {
         }
       }
     },
-    login: async (parent, { email, password }) => {
-      const user = await User.findOne({ email });
+    login: async (parent, { username, password }) => {
+      const user = await User.findOne({ username });
 
       if (!user) {
         throw new AuthenticationError("No user found with this email address");
@@ -181,6 +181,23 @@ const resolvers = {
       const token = signToken(user);
 
       return { token, user };
+    },
+    getUserPlaylists: async (parent, args, context) => {
+      const user = context.user;
+
+      if (!user) {
+        throw new AuthenticationError(
+          "You must be logged in to view your playlists"
+        );
+      }
+
+      const username = user.data.username;
+
+      const playlists = await Playlist.find({ username });
+
+      console.log("PLAYLISTS", playlists);
+
+      return playlists;
     },
   },
   Mutation: {

@@ -44,3 +44,112 @@ export const DELETE_USER = gql`
     }
   }
 `;
+
+export const CREATE_SPOTIFY_PLAYLIST = gql`
+  mutation createSpotifyPlaylist(
+    $name: String!
+    $description: String
+    $image: String
+    $tracks: [TrackInput]
+  ) {
+    createSpotifyPlaylist(
+      name: $name
+      description: $description
+      image: $image
+      tracks: $tracks
+    ) {
+      _id
+      name
+      description
+      images
+      tracks {
+        title
+        artists
+        duration
+        previewUrl
+        link
+        image
+        nextTracks {
+          title
+          artists
+          duration
+          previewUrl
+          link
+          image
+        }
+      }
+    }
+  }
+`;
+
+export const SAVE_PLAYLIST = gql`
+  mutation savePlaylist(
+    $name: String!
+    $description: String
+    $images: [String]
+    $tracks: [TrackInput]
+    $link: String
+  ) {
+    savePlaylist(
+      name: $name
+      description: $description
+      images: $images
+      tracks: $tracks
+      link: $link
+    ) {
+      _id
+      name
+      description
+      images
+      tracks {
+        title
+        artists
+        duration
+        previewUrl
+        link
+        image
+        nextTracks {
+          title
+          artists
+          duration
+          previewUrl
+          link
+          image
+        }
+      }
+      username
+      trackCount
+      link
+    }
+  }
+`;
+
+export const DELETE_PLAYLIST = gql`
+  mutation deletePlaylist($playlistId: ID!) {
+    deletePlaylist(playlistId: $playlistId) {
+      _id
+      name
+      description
+      images
+      tracks {
+        title
+        artists
+        duration
+        previewUrl
+        link
+        image
+        nextTracks {
+          title
+          artists
+          duration
+          previewUrl
+          link
+          image
+        }
+      }
+      username
+      trackCount
+      link
+    }
+  }
+`;
