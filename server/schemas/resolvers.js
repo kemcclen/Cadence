@@ -169,8 +169,12 @@ const resolvers = {
       const user = await User.findOne({ username });
 
       if (!user) {
-        throw new AuthenticationError("No user found with this email address");
+        throw new AuthenticationError(
+          "No user found with this username/email address"
+        );
       }
+
+      console.log("USER", user);
 
       const correctPw = await user.isCorrectPassword(password);
 
@@ -180,22 +184,38 @@ const resolvers = {
 
       const token = signToken(user);
 
+      console.log("TOKEN", token);
+
       return { token, user };
+    },
+    loginSpotify: async (_, args, context) => {
+      const state = generateRandomString(16);
+      const scopes = "playlist-modify-public playlist-modify-private";
+
+      const authURL =
+        "https://accounts.spotify.com/authorize?" +
+        querystring.stringify({
+          response_type: "code",
+          client_id: process.env.REACT_APP_CLIENT_ID,
+          scope: scopes,
+          redirect_uri: "http://localhost:3001/callback",
+          state: state,
+        });
+
+      return authURL;
     },
     getUserPlaylists: async (parent, args, context) => {
       const user = context.user;
 
       if (!user) {
         throw new AuthenticationError(
-          "You must be logged in to view your playlists"
+          "You must be logged in to get a user's playlists"
         );
       }
 
       const username = user.data.username;
 
-      const playlists = await Playlist.find({ username });
-
-      console.log("PLAYLISTS", playlists);
+      const playlists = await Playlist.find({ username }).populate("tracks");
 
       return playlists;
     },
@@ -203,6 +223,8 @@ const resolvers = {
   Mutation: {
     addUser: async (parent, { username, password }) => {
       const user = await User.create({ username, password });
+
+      console.log("USER", user);
       const token = signToken(user);
       return { token, user };
     },

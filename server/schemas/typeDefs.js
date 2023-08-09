@@ -82,7 +82,6 @@ const typeDefs = gql`
   }
 
   type Query {
-    login(username: String!, password: String!): Auth
     users: [User]
     user(username: String!): User
     thoughts(username: String): [Thought]
@@ -90,6 +89,7 @@ const typeDefs = gql`
     getTracks: [Track]
     getTrackAnalysis(trackId: String!): TrackAnalysis
     getOpenAIResponse(length: Int!, input: String!): [Track]
+    login(username: String!, password: String!): Auth
     loginSpotify: String
     getUserPlaylists: [Playlist]
   }
