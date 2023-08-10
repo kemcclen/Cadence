@@ -108,6 +108,9 @@ th {
 .btn-search-radio {
   margin-right: 0.5em;
 }
+.carousel-item {
+  transition: none !important;
+}
 
 .btn-add-track {
   display: inline-block;
