@@ -1,63 +1,102 @@
-# Getting Started with Create React App
+# Cadence
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Description:
+Elevate Your Music Experience with the Spotify API and React App.
+Discover a new way to immerse yourself in the world of music with our Spotify API-powered React app. Seamlessly merging the capabilities of Spotify's vast music library with the versatility of React, our app offers a user-friendly interface that lets you explore, create, and enjoy music like never before. 
 
-## Available Scripts
+## Table of Contents
 
-In the project directory, you can run:
+- [Description](#description)
+- [Usage](#usage)
+- [Demonstration](#demonstration)
+- [Contributions](#contributions)
+- [Links](#links)
+- [Credits](#credits)
+- [Technologies](technologies)
+- [License](#license)
 
-### `npm start`
+## Usage:
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+**User**: As a Cadence user, you have the ability to:
+- Register for an account
+- Access your account
+- Create your own music collections
+- Enjoy your favorite tunes
+- Update your playlists
+- Remove playlists as needed
+- Sign out
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+**Interface**: Feel free to explore Cadence through our Heroku link:
 
-### `npm test`
+## Demonstration:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+1. **Home Page** 
 
-### `npm run build`
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+2. **Register for an account** 
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+3. **Access your account**
 
-### `npm run eject`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+4. **Create your own music collections** 
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+5. **Enjoy your favorite tunes** 
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
 
-## Learn More
+6. **Update your playlists** 
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+7. **Remove playlists**
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+8. **Sign out**
 
-### Code Splitting
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Contributions: 
 
-### Analyzing the Bundle Size
+We welcome contributions to Cadence! If you have ideas for improvements, bug fixes, or new features, feel free to submit a pull request.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+To contribute to Cadence, please follow these steps:
 
-### Making a Progressive Web App
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes in the new branch.
+4. Commit your changes, providing a descriptive commit message.
+5. Push your branch to your forked repository.
+6. Open a pull request against the main repository.
+7. Provide a clear and concise description of your changes in the pull request.
+8. Submit the pull request and wait for feedback or further instructions.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Please note that by submitting a pull request, you agree to allow the project maintainers to license your work under the project's existing license.
 
-### Advanced Configuration
+We appreciate your interest in contributing to Cadence.
+
+## Links: 
+
+- [GitHub Repository](https://github.com/kemcclen/Cadence) 
+- [Deployed page]() 
+
+## Credits
+- [gaomaoyuan](https://github.com/gaomaoyuan)  - Gao Maoyuan
+- [kemcclen](https://github.com/kemcclen)  - Katharine McClenaghan
+- [Shaun-Nelson](https://github.com/Shaun-Nelson)  - Shaun Nelson
+- [Shok1to](https://github.com/Shok1to)  - Shoko Takahashi
+
+## Technologies
+- React
+- GraphQL with a Node.js and Express.js server
+- MongoDB and the Mongoose ODM for the database
+- Queries and mutations for retrieving, adding, updating, and deleting data
+- JWT authentication
+- API
+- Heroku
+
+## License:
+Cadence is licensed under the [MIT License](https://opensource.org/license/mit/).
+
+_The MIT License is a permissive open-source license that allows you to use, modify, and distribute the project for both commercial and non-commercial purposes. It provides you with the freedom to customize the application to suit your needs._
+
+_By contributing to TastyBytes, you agree that your contributions will be licensed under the same MIT License. This ensures that the project remains open-source and accessible to the community._
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
