@@ -8,13 +8,14 @@ import Auth from "../utils/auth";
 const SavePlaylistForm = ({ tracks, images }) => {
   const [playlistName, setPlaylistName] = useState("");
   const [playlistDescription, setPlaylistDescription] = useState("");
-  const [showForm, setShowForm] = useState(false); // Add state for form visibility
+  const [showForm, setShowForm] = useState(false); 
   const [cookies, setCookie] = useCookies(["access_token", "refresh_token"]);
 
   const [savePlaylist] = useMutation(SAVE_PLAYLIST);
 
   const [createSpotifyPlaylist] = useMutation(CREATE_SPOTIFY_PLAYLIST);
 
+  // create playlist on spotify account
   const handleSpotify = async (e) => {
     e.preventDefault();
 
@@ -34,7 +35,7 @@ const SavePlaylistForm = ({ tracks, images }) => {
       console.error(err);
     }
   };
-
+// save playlist
   const onSubmit = async (e) => {
     e.preventDefault();
 

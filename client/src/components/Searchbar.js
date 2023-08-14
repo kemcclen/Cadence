@@ -48,7 +48,7 @@ const Searchbar = () => {
       {loading ? (
         <>
           <div className="flex-container">
-            {/* ------------------------------------------SEARCH BAR */}
+            {/* SEARCH BAR */}
             <form id="search" onSubmit={onSubmit}>
               <div>
                 <input
@@ -60,12 +60,12 @@ const Searchbar = () => {
                   placeholder="Happy camping trip"
                   style={{ paddingLeft: "10px", textAlign: "center" }}
                 ></input>
-                {/* ----------------------------------------SEARCH BUTTON */}
+                {/* SEARCH BUTTON */}
                 <button className="btn-submit" value="Search" type="submit">
                   <img src={searchImg} alt="Search Icon" />
                 </button>
               </div>
-              {/* ---------------------------------------------PLAYLIST LENGTH */}
+              {/*PLAYLIST LENGTH */}
               <div className="custom-radio-list">
                 <label className="lengthTitle" htmlFor="length">
                   Length:
@@ -132,7 +132,7 @@ const Searchbar = () => {
               </div>
             </form>
           </div>
-          {/* ----------------------------------GENERATING MESSAGE */}
+          {/* GENERATING MESSAGE */}
           <div className="container d-flex justify-content-center align-items-start mt-5">
             <div className="row">
               <div className="col-12">
@@ -153,7 +153,7 @@ const Searchbar = () => {
       ) : (
         <>
           <div className="flex-container">
-            {/* -----------------------------------SEARCH BAR */}
+            {/* SEARCH BAR */}
             <form id="search" onSubmit={onSubmit}>
               <div>
                 <input
@@ -165,12 +165,12 @@ const Searchbar = () => {
                   placeholder="Happy camping trip"
                   style={{ paddingLeft: "10px", textAlign: "center" }}
                 ></input>
-                {/* ----------------------------------SEARCH BUTTON */}
+                {/*SEARCH BUTTON */}
                 <button className="btn-submit" value="Search" type="submit">
                   <img src={searchImg} alt="Search Icon" />
                 </button>
               </div>
-              {/* -----------------------------------------PLAYLIST LENGTH */}
+              {/*PLAYLIST LENGTH */}
               <div className="custom-radio-list">
                 <label className="lengthTitle" htmlFor="length">
                   Length:
