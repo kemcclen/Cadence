@@ -51,7 +51,7 @@ const AppNavbar = () => {
 
               {Auth.loggedIn() ? (
                 <>
-                  <Nav.Link as={Link} to="/playlists" classnName="nav-option">
+                  <Nav.Link as={Link} to="/playlists" className="nav-option">
                     Your Playlists
                   </Nav.Link>
 
