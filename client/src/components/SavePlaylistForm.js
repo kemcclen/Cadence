@@ -8,6 +8,7 @@ import Auth from "../utils/auth";
 const SavePlaylistForm = ({ tracks, images }) => {
   const [playlistName, setPlaylistName] = useState("");
   const [playlistDescription, setPlaylistDescription] = useState("");
+  const [showForm, setShowForm] = useState(false); // Add state for form visibility
   const [cookies, setCookie] = useCookies(["access_token", "refresh_token"]);
 
   const [savePlaylist] = useMutation(SAVE_PLAYLIST);
@@ -57,9 +58,15 @@ const SavePlaylistForm = ({ tracks, images }) => {
   return (
     <>
       {Auth.loggedIn() && (
-        <Form onSubmit={onSubmit}>
+         <div className="create-playlist">
+         <Button className="playlist-btn" onClick={() => setShowForm(!showForm)}>
+           {showForm ? "Cancel" : "Create Playlist"}
+         </Button>
+         {showForm && (
+          
+        <Form onSubmit={onSubmit} className="playlist-form">
           <Form.Group className='mb-3' controlId='formPlaylistName'>
-            <Form.Label>Playlist Name</Form.Label>
+            <Form.Label>Playlist Name:</Form.Label>
             <Form.Control
               type='text'
               placeholder='Enter playlist name'
@@ -67,30 +74,36 @@ const SavePlaylistForm = ({ tracks, images }) => {
             />
           </Form.Group>
           <Form.Group className='mb-3' controlId='formPlaylistDescription'>
-            <Form.Label>Playlist Description</Form.Label>
+            <Form.Label>Playlist Description:</Form.Label>
             <Form.Control
               type='text'
-              placeholder='Enter playlist description'
+              placeholder='Enter description'
               onChange={(e) => setPlaylistDescription(e.target.value)}
             />
           </Form.Group>
-          <div className='d-flex '>
-            <Button variant='primary' type='submit'>
+          <div>
+            <Button className="playlist-btn" type='submit'>
               Save Playlist
             </Button>
+           
             {cookies.access_token || cookies.refresh_token ? (
               <Button
-                className='ms-4'
+                className='playlist-btn'
                 variant='success'
                 onClick={handleSpotify}
               >
                 Save to Spotify
               </Button>
+             
             ) : (
+              <div>
               <p>Login to Spotify to save Playlist to your account</p>
+             </div>
             )}
           </div>
         </Form>
+      )}
+      </div>
       )}
     </>
   );
