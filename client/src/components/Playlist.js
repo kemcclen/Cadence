@@ -10,7 +10,7 @@ const Playlist = ({ playlist }) => {
      
       <Carousel.Item key={index}>
         <div className="carousel-item-content">
-          <img src={track.image} alt="..."  style={{ height: '40%', width: '40%', transition: 'none'}}/>
+          <img src={track.image} alt="..."  />
         </div>
         <div className="caption-content">
         <Carousel.Caption>
@@ -42,7 +42,7 @@ const Playlist = ({ playlist }) => {
   return (
     <>
    
-      <Carousel className="mt-5">{carouselItems}</Carousel>
+      <Carousel className="mt-5 carousel-size">{carouselItems}</Carousel>
       
     </>
   );

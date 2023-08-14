@@ -59,7 +59,7 @@ const SavePlaylistForm = ({ tracks, images }) => {
     <>
       {Auth.loggedIn() && (
          <div className="create-playlist">
-         <Button className="playlist-btn" onClick={() => setShowForm(!showForm)}>
+         <Button className="playlist-btn save-playlist" onClick={() => setShowForm(!showForm)}>
            {showForm ? "Cancel" : "Create Playlist"}
          </Button>
          {showForm && (
