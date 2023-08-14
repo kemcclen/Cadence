@@ -170,7 +170,7 @@ const Searchbar = () => {
                   <img src={searchImg} alt="Search Icon" />
                 </button>
               </div>
-{/* -----------------------------------------PLAYLIST LENGTH */}
+              {/* -----------------------------------------PLAYLIST LENGTH */}
               <div className="custom-radio-list">
                 <label className="lengthTitle" htmlFor="length">
                   Length:

@@ -58,52 +58,55 @@ const SavePlaylistForm = ({ tracks, images }) => {
   return (
     <>
       {Auth.loggedIn() && (
-         <div className="create-playlist">
-         <Button className="playlist-btn save-playlist" onClick={() => setShowForm(!showForm)}>
-           {showForm ? "Cancel" : "Create Playlist"}
-         </Button>
-         {showForm && (
-          
-        <Form onSubmit={onSubmit} className="playlist-form">
-          <Form.Group className='mb-3' controlId='formPlaylistName'>
-            <Form.Label>Playlist Name:</Form.Label>
-            <Form.Control
-              type='text'
-              placeholder='Enter playlist name'
-              onChange={(e) => setPlaylistName(e.target.value)}
-            />
-          </Form.Group>
-          <Form.Group className='mb-3' controlId='formPlaylistDescription'>
-            <Form.Label>Playlist Description:</Form.Label>
-            <Form.Control
-              type='text'
-              placeholder='Enter description'
-              onChange={(e) => setPlaylistDescription(e.target.value)}
-            />
-          </Form.Group>
-          <div>
-            <Button className="playlist-btn" type='submit'>
-              Save Playlist
-            </Button>
-           
-            {cookies.access_token || cookies.refresh_token ? (
-              <Button
-                className='playlist-btn'
-                variant='success'
-                onClick={handleSpotify}
-              >
-                Save to Spotify
-              </Button>
-             
-            ) : (
+        <div className="create-playlist">
+          {/* Open create playlist form */}
+          <Button
+            className="playlist-btn save-playlist"
+            onClick={() => setShowForm(!showForm)}
+          >
+            {showForm ? "Cancel" : "Create Playlist"}
+          </Button>
+          {showForm && (
+            // Create playlist form
+            <Form onSubmit={onSubmit} className="playlist-form">
+              <Form.Group className="mb-3" controlId="formPlaylistName">
+                <Form.Label>Playlist Name:</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter playlist name"
+                  onChange={(e) => setPlaylistName(e.target.value)}
+                />
+              </Form.Group>
+              <Form.Group className="mb-3" controlId="formPlaylistDescription">
+                <Form.Label>Playlist Description:</Form.Label>
+                <Form.Control
+                  type="text"
+                  placeholder="Enter description"
+                  onChange={(e) => setPlaylistDescription(e.target.value)}
+                />
+              </Form.Group>
               <div>
-              <p>Login to Spotify to save Playlist to your account</p>
-             </div>
-            )}
-          </div>
-        </Form>
-      )}
-      </div>
+                <Button className="playlist-btn" type="submit">
+                  Save Playlist
+                </Button>
+
+                {cookies.access_token || cookies.refresh_token ? (
+                  <Button
+                    className="playlist-btn"
+                    variant="success"
+                    onClick={handleSpotify}
+                  >
+                    Save to Spotify
+                  </Button>
+                ) : (
+                  <div>
+                    <p>Login to Spotify to save Playlist to your account</p>
+                  </div>
+                )}
+              </div>
+            </Form>
+          )}
+        </div>
       )}
     </>
   );

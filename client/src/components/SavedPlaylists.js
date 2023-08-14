@@ -28,15 +28,15 @@ const SavedPlaylists = () => {
       {playlists.length ? (
         playlists.map((playlist) => {
           return (
-            <div className='container'>
-              <div className='row'>
-                <div className='col-12'>
-                  <div className='d-flex'>
-                    <h1 className='text-center mb-5'>{playlist.name}</h1>
+            <div className="container">
+              <div className="row">
+                <div className="col-12">
+                  <div className="d-flex">
+                    <h1 className="text-center mb-5">{playlist.name}</h1>
                     <Button
-                      className='ms-auto'
+                      className="ms-auto"
                       style={{ height: "fit-content" }}
-                      variant='danger'
+                      variant="danger"
                       onClick={async () => {
                         await deletePlaylist({
                           variables: {
@@ -49,24 +49,24 @@ const SavedPlaylists = () => {
                       <FaTrash />
                     </Button>
                   </div>
-                  <h2 className='text-center mb-5 ms-auto'>
+                  <h2 className="text-center mb-5 ms-auto">
                     {playlist.description}
                   </h2>
-                  <Carousel className='mt-5'>
+                  <Carousel className="mt-5">
                     {playlist.tracks.map((track, index) => {
                       return (
                         <Carousel.Item key={index}>
                           <img
-                            className='d-block w-100'
+                            className="d-block w-100"
                             src={track.image}
-                            alt='...'
+                            alt="..."
                           />
                           <Carousel.Caption>
                             <h3>{track.title}</h3>
                             <p>{track.artists[0]}</p>
                             {track.previewUrl && (
                               <button
-                                className='btn-play'
+                                className="btn-play"
                                 onClick={() => {
                                   if (audio.src !== track.previewUrl) {
                                     audio.src = track.previewUrl;
@@ -79,7 +79,7 @@ const SavedPlaylists = () => {
                             )}
                             {"  "}
 
-                            <span className='duration'>{track.duration}</span>
+                            <span className="duration">{track.duration}</span>
                           </Carousel.Caption>
                         </Carousel.Item>
                       );
@@ -91,10 +91,10 @@ const SavedPlaylists = () => {
           );
         })
       ) : (
-        <div className='container'>
-          <div className='row'>
-            <div className='col-12'>
-              <h1 className='text-center mb-5'>No saved playlists yet!</h1>
+        <div className="container">
+          <div className="row">
+            <div className="col-12">
+              <h1 className="text-center mb-5">No saved playlists yet!</h1>
             </div>
           </div>
         </div>
