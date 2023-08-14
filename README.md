@@ -31,25 +31,26 @@ Discover a new way to immerse yourself in the world of music with our Spotify AP
 ## Demonstration:
 
 1. **Home Page** 
-
+![home](./assets/home.png)
 
 2. **Register for an account** 
-
+![sign up](./assets/signup.png)
 
 3. **Access your account**
-
+![login](./assets/login.png)
 
 4. **Create your own music collections** 
-
+![create playlist by searching a keyword or feeling](./assets//search.png)
 
 5. **Enjoy your favorite tunes** 
+![playlist generated based on 'rain'](./assets/listen.png)
+
+6. **Create your playlists** 
+![playlist form asking for playlist title and description](./assets/create-playlist.png)
+
+7. **View Your playlists**
 
 
-6. **Update your playlists** 
-
-7. **Remove playlists**
-
-8. **Sign out**
 
 
 ## Contributions: 
@@ -96,7 +97,7 @@ Cadence is licensed under the [MIT License](https://opensource.org/license/mit/)
 
 _The MIT License is a permissive open-source license that allows you to use, modify, and distribute the project for both commercial and non-commercial purposes. It provides you with the freedom to customize the application to suit your needs._
 
-_By contributing to TastyBytes, you agree that your contributions will be licensed under the same MIT License. This ensures that the project remains open-source and accessible to the community._
+_By contributing to Cadence, you agree that your contributions will be licensed under the same MIT License. This ensures that the project remains open-source and accessible to the community._
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
 
