@@ -283,13 +283,10 @@ th {
   background-color: transparent;
 }
 
-.searchbar:hover {
-  border: 3px solid var(--btn-bg);
+.searchbar:active {
+  background-color: transparent;
 }
 
-.searchbar:active {
-  border: 1px solid var(--btn-bg);
-}
 
 /* PLAYLIST LENGTH */
 .custom-radio-list {
