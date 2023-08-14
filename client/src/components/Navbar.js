@@ -32,32 +32,32 @@ const AppNavbar = () => {
 
   return (
     <>
-      <Navbar className='navbar' expand="lg">
+      <Navbar className='navbar' expand='lg'>
         <Container fluid>
-          <Navbar.Brand as={Link} to="/" className="nav-brand">
+          <Navbar.Brand as={Link} to='/' className='nav-brand'>
             Cadence
           </Navbar.Brand>
 
-          <Navbar.Toggle aria-controls="navbar" className="custom-toggler" />
+          <Navbar.Toggle aria-controls='navbar' className='custom-toggler' />
 
           <Navbar.Collapse
-            id="navbar"
-            className=" navToggle d-lg-flex justify-content-end"
+            id='navbar'
+            className=' navToggle d-lg-flex justify-content-end'
           >
-            <Nav className="ml-lg-auto d-lg-flex nav-option">
-              <Nav.Link as={Link} to="/">
+            <Nav className='ml-lg-auto d-lg-flex nav-option'>
+              <Nav.Link as={Link} to='/'>
                 AI Playlist
               </Nav.Link>
 
               {Auth.loggedIn() ? (
                 <>
-                  <Nav.Link as={Link} to="/playlists" classnName="nav-option">
+                  <Nav.Link as={Link} to='/playlists' className='nav-option'>
                     Your Playlists
                   </Nav.Link>
 
                   {!cookies.refresh_token || !cookies.access_token ? (
                     <Button
-                      className="btn btn-success"
+                      className='btn btn-success'
                       onClick={handleSpotifyLogin}
                     >
                       Login to Spotify
@@ -66,7 +66,7 @@ const AppNavbar = () => {
                   <Nav.Link onClick={Auth.logout}>Logout</Nav.Link>
                 </>
               ) : (
-                <Nav.Link as={Link} to="/login">
+                <Nav.Link as={Link} to='/login'>
                   Login/Sign Up
                 </Nav.Link>
               )}
@@ -76,31 +76,31 @@ const AppNavbar = () => {
       </Navbar>
       {/* set modal data up */}
       <Modal
-        size="lg"
+        size='lg'
         show={showModal}
         onHide={() => setShowModal(false)}
-        aria-labelledby="signup-modal"
+        aria-labelledby='signup-modal'
       >
         {/* tab container to do either signup or login component */}
-        <Tab.Container defaultActiveKey="login">
+        <Tab.Container defaultActiveKey='login'>
           <Modal.Header closeButton>
-            <Modal.Title id="signup-modal">
-              <Nav variant="pills">
+            <Modal.Title id='signup-modal'>
+              <Nav variant='pills'>
                 <Nav.Item>
-                  <Nav.Link eventKey="login">Login</Nav.Link>
+                  <Nav.Link eventKey='login'>Login</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                  <Nav.Link eventKey="signup">Sign Up</Nav.Link>
+                  <Nav.Link eventKey='signup'>Sign Up</Nav.Link>
                 </Nav.Item>
               </Nav>
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Tab.Content>
-              <Tab.Pane eventKey="login">
+              <Tab.Pane eventKey='login'>
                 <LoginForm handleModalClose={() => setShowModal(false)} />
               </Tab.Pane>
-              <Tab.Pane eventKey="signup">
+              <Tab.Pane eventKey='signup'>
                 <SignUpForm handleModalClose={() => setShowModal(false)} />
               </Tab.Pane>
             </Tab.Content>

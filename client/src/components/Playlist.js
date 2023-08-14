@@ -7,19 +7,21 @@ const Playlist = ({ playlist }) => {
 
   const carouselItems = playlist.map((track, index) => {
     return (
-     
       <Carousel.Item key={index}>
-        <div className="carousel-item-content">
-          <img src={track.image} alt="..."  style={{ height: '40%', width: '40%', transition: 'none'}}/>
+        <div className='carousel-item-content'>
+          <img
+            src={track.image}
+            alt='...'
+            style={{ height: "400px", width: "400px", transition: "none" }}
+          />
         </div>
-        <div className="caption-content">
-        <Carousel.Caption>
-          
+        <div className='caption-content'>
+          <Carousel.Caption>
             <h3>{track.title}</h3>
             <p>{track.artist}</p>
             {track.previewUrl && (
               <button
-                className="btn-play"
+                className='btn-play'
                 onClick={() => {
                   if (audio.src !== track.previewUrl) {
                     audio.src = track.previewUrl;
@@ -31,9 +33,8 @@ const Playlist = ({ playlist }) => {
               </button>
             )}
 
-            <span className="duration">{track.duration}</span>
-          
-        </Carousel.Caption>
+            <span className='duration'>{track.duration}</span>
+          </Carousel.Caption>
         </div>
       </Carousel.Item>
     );
@@ -41,9 +42,9 @@ const Playlist = ({ playlist }) => {
 
   return (
     <>
-   
-      <Carousel className="mt-5">{carouselItems}</Carousel>
-      
+      <Carousel className='mt-5' style={{ width: "400px", height: "400px" }}>
+        {carouselItems}
+      </Carousel>
     </>
   );
 };

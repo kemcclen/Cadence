@@ -6,7 +6,7 @@ const querystring = require("querystring");
 const { Configuration, OpenAIApi } = require("openai");
 require("dotenv").config();
 
-// Helper function to generate a random string for the state parameter
+// Helper function to generate a random string for the state parameter to login to Spotify
 const generateRandomString = (length) => {
   let text = "";
   const possible =
@@ -83,7 +83,7 @@ const resolvers = {
       ]
       Don't include any duplicates.".`,
           temperature: 0,
-          max_tokens: 3000,
+          max_tokens: 3500,
         });
         // get the songs from the response
         const songs = JSON.parse(chatCompletion.data.choices[0].text);
@@ -222,7 +222,7 @@ const resolvers = {
   },
   Mutation: {
     addUser: async (parent, { username, password }) => {
-      console.log('adding user');
+      console.log("adding user");
       const email = username;
       const user = await User.create({ username, email, password });
 
@@ -299,10 +299,7 @@ const resolvers = {
       spotifyApi.setAccessToken(data.body["access_token"]);
       spotifyApi.setRefreshToken(data.body["refresh_token"]);
 
-      console.log("BEFORE RESULTS");
-
       const searchResults = await spotifyApi.searchTracks(searchTerm);
-      console.log("AFTER RESULTS", searchResults.body.tracks.items[0]);
 
       return await Track.insertMany(
         searchResults.body.tracks.items.map((track) => {
@@ -353,15 +350,17 @@ const resolvers = {
       });
 
       // Ensure we have a valid access token before making the API call
-      spotifyApi.refreshAccessToken().then(
-        (data) => {
-          console.log("The access token has been refreshed!");
-          spotifyApi.setAccessToken(data.body["access_token"]);
-        },
-        (err) => {
-          console.log("Could not refresh access token", err);
-        }
-      );
+      if (!spotifyApi.getAccessToken()) {
+        spotifyApi.refreshAccessToken().then(
+          (data) => {
+            console.log("The access token has been refreshed!");
+            spotifyApi.setAccessToken(data.body["access_token"]);
+          },
+          (err) => {
+            console.log("Could not refresh access token", err);
+          }
+        );
+      }
 
       const playlist = await spotifyApi.createPlaylist(name, {
         description,

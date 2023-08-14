@@ -10,7 +10,7 @@ require("dotenv").config();
 const { typeDefs, resolvers } = require("./schemas");
 const db = require("./config/connection");
 
-const PORT = process.env.REAC_APP_PORT || 3001;
+const PORT = process.env.REACT_APP_PORT || 3001;
 const app = express();
 
 // Set up the cookie session middleware
