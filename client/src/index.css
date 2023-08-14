@@ -90,26 +90,24 @@ th {
 /* BUTTONS */
 
 .btn-submit {
-  font-size: 32px;
-  border-radius: 0px 10px 10px 0px;
-  border: 1px solid rgba(0, 0, 0, 0.4);
-  padding: 0.2em;
-  background-color: rgba(255, 255, 255, 0.4);
+ border: none;
+  background-color: transparent;
+ 
+}
+
+.btn-submit img {
+  height: 35px;
+  width: 35px;
 }
 
 .btn-submit:hover {
-  border: 3px solid var(--btn-bg);
+  transform: scale(1.2);
+  transition: transform 0.3s ease;
 }
 
-.btn-submit:active {
-  border: 3px solid var(--btn-bg);
-}
 
 .btn-search-radio {
   margin-right: 0.5em;
-}
-.carousel-item {
-  transition: none !important;
 }
 
 .btn-add-track {
@@ -280,9 +278,9 @@ th {
   padding: 0.2em;
   font-size: 32px;
   width: 500px;
-  border: 1px solid rgba(0, 0, 0, 0.4);
-  border-radius: 10px 0px 0px 10px;
-  background-color: rgba(255, 255, 255, 0.4);
+  border: none;
+  border-bottom: 2px solid #d1d1d4;
+  background-color: transparent;
 }
 
 .searchbar:hover {
@@ -291,6 +289,55 @@ th {
 
 .searchbar:active {
   border: 1px solid var(--btn-bg);
+}
+
+/* PLAYLIST LENGTH */
+.custom-radio-list {
+  display: flex;
+  justify-content: center; 
+  width: 100%;
+}
+
+.custom-radio-option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  margin-right: 10px; /* Add spacing between options */
+}
+
+.custom-radio-circle {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 2px solid #ccc;
+  margin-right: 10px;
+  transition: border-color 0.3s ease;
+}
+
+.custom-radio-option input[type="radio"] {
+  display: none;
+}
+
+.custom-radio-option input[type="radio"]:checked + .custom-radio-circle {
+  border-color: #5b5b9a;
+}
+.lengthTitle {
+  margin-right: 10px;
+  font-weight: bold;
+  color:#39395e;
+}
+
+/* IMAGES CAROUSEL */
+.carousel-item-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  
+}
+.caption-content {
+  text-align: center;
+  margin-top: 170px;
 }
 
 /* FIRST SECTION */
@@ -347,10 +394,6 @@ th {
     margin-left: 0.5em;
   }
 
-  .btn-submit {
-    font-size: 18px;
-  }
-
   .search-label {
     font-size: 14px;
   }
@@ -391,22 +434,6 @@ th {
 
     .searchbar:active {
       border: 1px solid var(--btn-bg);
-    }
-
-    .btn-submit {
-      border-radius: 0px 10px 10px 0px;
-      border: 1px solid black;
-      padding: 0.2em;
-      color: var(--dark-text);
-      background-color: var(--btn-bg);
-    }
-
-    .btn-submit:hover {
-      border: 3px solid white;
-    }
-
-    .btn-submit:active {
-      border: 3px solid white;
     }
 
     .btn-add-track {
@@ -514,4 +541,65 @@ th {
       background-color: white;
     }
   }
+}
+
+/* CREATE PLAYLIST */
+.create-playlist {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-top: 20px; 
+}
+
+.playlist-btn {
+  margin-bottom: 40px; 
+  background: #6f6fa0 !important;
+  border: #414175 !important;
+  
+}
+
+.playlist-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 40px;
+}
+
+
+/* Navbar*/
+@media (min-width: 992px) {
+  .navbar-toggler {
+    display: none; 
+  } 
+
+  .navbar-collapse {
+    display: flex !important; 
+  }
+
+  .navbar-expand-lg .navbar-nav .nav-link {
+    padding-right: 2rem;
+    padding-left: 2rem;
+  }
+  span .custom-toggler .navbar-toggler-icon {
+    color: blue !important;
+  }
+  
+}
+ .navbar {
+  background-color: #c1c1f0;
+ }
+
+.navbar-nav .nav-link {
+  font-weight: 500;
+  color: #000000;
+  font-size: 20px;
+  margin-right: 15px;
+}
+
+.nav-brand {
+  font-weight: 500;
+  font-size: 30px !important;
+  color:#414175 !important
 }

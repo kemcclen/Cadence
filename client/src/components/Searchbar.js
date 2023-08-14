@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import SearchResults from "./SearchResults";
 import { useLazyQuery } from "@apollo/client";
 import { GET_OPENAI_RESPONSE } from "../utils/queries";
+import searchImg from "./assets/search.png";
 
 const Searchbar = () => {
   const [search, setSearch] = useState("");
@@ -46,44 +47,103 @@ const Searchbar = () => {
     <>
       {loading ? (
         <>
-          <div className='flex-container'>
-            <form id='search' onSubmit={onSubmit}>
+          <div className="flex-container">
+            {/* ------------------------------------------SEARCH BAR */}
+            <form id="search" onSubmit={onSubmit}>
               <div>
                 <input
-                  className='searchbar'
-                  id='searchbar'
-                  type='text'
+                  className="searchbar"
+                  id="searchbar"
+                  type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder='Happy camping trip'
+                  placeholder="Happy camping trip"
+                  style={{ paddingLeft: "10px", textAlign: "center" }}
                 ></input>
-                <input
-                  className='btn-submit'
-                  value='Search'
-                  type='submit'
-                ></input>
+                {/* ----------------------------------------SEARCH BUTTON */}
+                <button className="btn-submit" value="Search" type="submit">
+                  <img src={searchImg} alt="Search Icon" />
+                </button>
               </div>
-              <label htmlFor='length'>Length of Playlist</label>
-              <select name='length' id='length' onChange={handleLength}>
-                <option value='10'>10</option>
-                <option value='20'>20</option>
-                <option value='30'>30</option>
-                <option value='40'>40</option>
-                <option value='50'>50</option>
-              </select>
+              {/* ---------------------------------------------PLAYLIST LENGTH */}
+              <div className="custom-radio-list">
+                <label className="lengthTitle" htmlFor="length">
+                  Length:
+                </label>
+                <label className="custom-radio-option">
+                  <input
+                    type="radio"
+                    name="length"
+                    id="length10"
+                    value="10"
+                    onChange={handleLength}
+                  />
+                  <span className="custom-radio-circle"></span>
+                  10
+                </label>
+
+                <label className="custom-radio-option">
+                  <input
+                    type="radio"
+                    name="length"
+                    id="length20"
+                    value="20"
+                    onChange={handleLength}
+                  />
+                  <span className="custom-radio-circle"></span>
+                  20
+                </label>
+
+                <label className="custom-radio-option">
+                  <input
+                    type="radio"
+                    name="length"
+                    id="length30"
+                    value="30"
+                    onChange={handleLength}
+                  />
+                  <span className="custom-radio-circle"></span>
+                  30
+                </label>
+
+                <label className="custom-radio-option">
+                  <input
+                    type="radio"
+                    name="length"
+                    id="length40"
+                    value="40"
+                    onChange={handleLength}
+                  />
+                  <span className="custom-radio-circle"></span>
+                  40
+                </label>
+
+                <label className="custom-radio-option">
+                  <input
+                    type="radio"
+                    name="length"
+                    id="length50"
+                    value="50"
+                    onChange={handleLength}
+                  />
+                  <span className="custom-radio-circle"></span>
+                  50
+                </label>
+              </div>
             </form>
           </div>
-          <div className='container d-flex justify-content-center align-items-start mt-5'>
-            <div className='row'>
-              <div className='col-12'>
+          {/* ----------------------------------GENERATING MESSAGE */}
+          <div className="container d-flex justify-content-center align-items-start mt-5">
+            <div className="row">
+              <div className="col-12">
                 <div
-                  className='spinner-border'
+                  className="spinner-border"
                   style={{ zIndex: 100 }}
-                  role='status'
+                  role="status"
                 >
-                  <span className='sr-only'></span>
+                  <span className="sr-only"></span>
                 </div>
-                <span className='ml-3'>
+                <span className="ml-3">
                   Getting AI playlist recommendations and Spotify data...
                 </span>
               </div>
@@ -92,31 +152,89 @@ const Searchbar = () => {
         </>
       ) : (
         <>
-          <div className='flex-container'>
-            <form id='search' onSubmit={onSubmit}>
+          <div className="flex-container">
+            {/* -----------------------------------SEARCH BAR */}
+            <form id="search" onSubmit={onSubmit}>
               <div>
                 <input
-                  className='searchbar'
-                  id='searchbar'
-                  type='text'
+                  className="searchbar"
+                  id="searchbar"
+                  type="text"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder='Happy camping trip'
+                  placeholder="Happy camping trip"
+                  style={{ paddingLeft: "10px", textAlign: "center" }}
                 ></input>
-                <input
-                  className='btn-submit'
-                  value='Search'
-                  type='submit'
-                ></input>
+                {/* ----------------------------------SEARCH BUTTON */}
+                <button className="btn-submit" value="Search" type="submit">
+                  <img src={searchImg} alt="Search Icon" />
+                </button>
               </div>
-              <label htmlFor='length'>Length of Playlist</label>
-              <select name='length' id='length' onChange={handleLength}>
-                <option value='10'>10</option>
-                <option value='20'>20</option>
-                <option value='30'>30</option>
-                <option value='40'>40</option>
-                <option value='50'>50</option>
-              </select>
+{/* -----------------------------------------PLAYLIST LENGTH */}
+              <div className="custom-radio-list">
+                <label className="lengthTitle" htmlFor="length">
+                  Length:
+                </label>
+                <label className="custom-radio-option">
+                  <input
+                    type="radio"
+                    name="length"
+                    id="length10"
+                    value="10"
+                    onChange={handleLength}
+                  />
+                  <span className="custom-radio-circle"></span>
+                  10
+                </label>
+
+                <label className="custom-radio-option">
+                  <input
+                    type="radio"
+                    name="length"
+                    id="length20"
+                    value="20"
+                    onChange={handleLength}
+                  />
+                  <span className="custom-radio-circle"></span>
+                  20
+                </label>
+
+                <label className="custom-radio-option">
+                  <input
+                    type="radio"
+                    name="length"
+                    id="length30"
+                    value="30"
+                    onChange={handleLength}
+                  />
+                  <span className="custom-radio-circle"></span>
+                  30
+                </label>
+
+                <label className="custom-radio-option">
+                  <input
+                    type="radio"
+                    name="length"
+                    id="length40"
+                    value="40"
+                    onChange={handleLength}
+                  />
+                  <span className="custom-radio-circle"></span>
+                  40
+                </label>
+
+                <label className="custom-radio-option">
+                  <input
+                    type="radio"
+                    name="length"
+                    id="length50"
+                    value="50"
+                    onChange={handleLength}
+                  />
+                  <span className="custom-radio-circle"></span>
+                  50
+                </label>
+              </div>
             </form>
           </div>
           {results.length && (
