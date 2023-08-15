@@ -27,7 +27,7 @@
   "scripts": {
     "start": "react-scripts start",
     "dev": "concurrently \"cd server && nodemon server.js\" \"cd client && npm start\"",
-    "install": "cd server && npm install && cd ../client && npm install",
+    "install": "npm i && cd server && npm install && cd ../client && npm install",
     "build": "react-scripts build",
     "seed": "node src/seeds/seed.js",
     "test": "react-scripts test",
