@@ -27,12 +27,12 @@ const SearchResults = ({ results, setResults }) => {
 
   return (
     <>
-      <div className='container d-flex align-items-start justify-content-center'>
-        <div className='row'>
-          <div className='col-12'>
+      <div className="container d-flex align-items-start justify-content-center">
+        <div className="row">
+          <div className="col-12">
             <Playlist playlist={results} />
             <SavePlaylistForm
-              className='mt-3'
+              className="mt-3"
               tracks={results}
               images={images}
             />

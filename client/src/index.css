@@ -90,9 +90,8 @@ th {
 /* BUTTONS */
 
 .btn-submit {
- border: none;
+  border: none;
   background-color: transparent;
- 
 }
 
 .btn-submit img {
@@ -104,7 +103,6 @@ th {
   transform: scale(1.2);
   transition: transform 0.3s ease;
 }
-
 
 .btn-search-radio {
   margin-right: 0.5em;
@@ -283,18 +281,14 @@ th {
   background-color: transparent;
 }
 
-.searchbar:hover {
-  border: 3px solid var(--btn-bg);
-}
-
 .searchbar:active {
-  border: 1px solid var(--btn-bg);
+  background-color: transparent;
 }
 
 /* PLAYLIST LENGTH */
 .custom-radio-list {
   display: flex;
-  justify-content: center; 
+  justify-content: center;
   width: 100%;
 }
 
@@ -325,7 +319,7 @@ th {
 .lengthTitle {
   margin-right: 10px;
   font-weight: bold;
-  color:#39395e;
+  color: #39395e;
 }
 
 /* IMAGES CAROUSEL */
@@ -333,11 +327,58 @@ th {
   display: flex;
   flex-direction: column;
   align-items: center;
-  
 }
 .caption-content {
   text-align: center;
-  margin-top: 170px;
+  margin-top: 160px;
+}
+
+.carousel-view {
+  height: 300px;
+  width: 300px;
+}
+
+.carousel-item img {
+  height: 300px;
+  width: 300px;
+}
+
+@media (min-width: 300px) and (max-width: 500px) {
+  .carousel-view {
+    height: 200px;
+    width: 200px;
+  }
+
+  .carousel-item img {
+    height: 200px;
+    width: 200px;
+  }
+}
+
+/* Media query for screens between 769px and 992px */
+@media (min-width: 769px) and (max-width: 992px) {
+  .carousel-view {
+    height: 350px;
+    width: 350px;
+  }
+
+  .carousel-item img {
+    height: 350px;
+    width: 350px;
+  }
+}
+
+/* Media query for screens 993px and larger */
+@media (min-width: 993px) {
+  .carousel-view {
+    height: 400px;
+    width: 400px;
+  }
+
+  .carousel-item img {
+    height: 400px;
+    width: 400px;
+  }
 }
 
 /* FIRST SECTION */
@@ -549,14 +590,17 @@ th {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  margin-top: 20px; 
+  margin-top: 20px;
 }
 
 .playlist-btn {
-  margin-bottom: 40px; 
+  margin-bottom: 40px;
   background: #6f6fa0 !important;
   border: #414175 !important;
-  
+}
+
+.save-playlist {
+  margin-top: 130px;
 }
 
 .playlist-form {
@@ -567,15 +611,14 @@ th {
   margin-bottom: 40px;
 }
 
-
 /* Navbar*/
 @media (min-width: 992px) {
   .navbar-toggler {
-    display: none; 
-  } 
+    display: none;
+  }
 
   .navbar-collapse {
-    display: flex !important; 
+    display: flex !important;
   }
 
   .navbar-expand-lg .navbar-nav .nav-link {
@@ -585,11 +628,10 @@ th {
   span .custom-toggler .navbar-toggler-icon {
     color: blue !important;
   }
-  
 }
- .navbar {
+.navbar {
   background-color: #c1c1f0;
- }
+}
 
 .navbar-nav .nav-link {
   font-weight: 500;
@@ -601,5 +643,5 @@ th {
 .nav-brand {
   font-weight: 500;
   font-size: 30px !important;
-  color:#414175 !important
+  color: #414175 !important;
 }

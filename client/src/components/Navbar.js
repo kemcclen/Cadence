@@ -32,7 +32,9 @@ const AppNavbar = () => {
 
   return (
     <>
+
       <Navbar className='navbar' expand='lg'>
+
         <Container fluid>
           <Navbar.Brand as={Link} to='/' className='nav-brand'>
             Cadence
@@ -51,7 +53,10 @@ const AppNavbar = () => {
 
               {Auth.loggedIn() ? (
                 <>
+
                   <Nav.Link as={Link} to='/playlists' className='nav-option'>
+
+
                     Your Playlists
                   </Nav.Link>
 
