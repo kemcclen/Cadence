@@ -16,6 +16,7 @@ const app = express();
 // Set up the cookie session middleware
 const sess = {
   name: "session",
+  keys: ['key1', 'key2'],
   secret: process.env.REACT_APP_SESSION_SECRET,
   maxAge: 24 * 60 * 60 * 1000, // 24 hours
 };

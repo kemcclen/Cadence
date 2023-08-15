@@ -1,0 +1,86 @@
+.playlist-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid #1DB954; /* You can remove this or change it, added for visibility */
+    border-radius: 5px;
+    width: 300px; /* adjust as needed */
+    margin: 1rem auto;
+}
+
+.playlist-name {
+    font-size: 1.5rem;
+    color: #FFFFFF;
+    margin-bottom: 1rem;
+}
+
+.horizontal-container {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.playlist-image {
+    width: 50px; /* adjust as needed */
+    height: 50px; /* adjust as needed */
+    border-radius: 50%; /* this makes the image circular */
+    object-fit: cover;
+}
+
+.playlist-description {
+    font-size: 1rem;
+    color: #AAAAAA; /* slightly grayed out for subtlety */
+    text-align: center;
+}
+
+.delete-button {
+    background-color: #FF0000; /* red color */
+    color: #FFFFFF;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.delete-button:hover {
+    background-color: #CC0000;
+}
+
+.container-fluid {
+    padding: 0;
+}
+
+.sidebar {
+    background-color: #f8f8f8;
+    height: auto;
+    overflow-y: auto;
+    border-right: 1px solid #ddd;
+    padding: 20px;
+}
+
+.main-content {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px; 
+}
+
+.playlist-content {
+    margin: 0 10px; 
+}
+
+.playlist-thumbnail {
+    width: 70px;  /* Adjust size as needed */
+    height: 70px;
+    margin-left: 20px;  /* Some space between the name and the image */
+    border-radius: 60%;  /* Making the image circular */
+    object-fit: cover;
+}
