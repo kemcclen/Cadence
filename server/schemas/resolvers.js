@@ -203,6 +203,9 @@ const resolvers = {
           state: state,
         });
 
+      console.log("AUTH URL", authURL);
+      console.log("CONTEXT", context);
+
       return authURL;
     },
     getUserPlaylists: async (parent, args, context) => {

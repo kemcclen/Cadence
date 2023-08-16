@@ -31,6 +31,7 @@ const handleSpotifyCallback = async (req, res) => {
       httpOnly: false,
     });
 
+    console.log("ACCESS TOKEN", accessToken);
     // Redirect to the React app
     res
       .status(200)
