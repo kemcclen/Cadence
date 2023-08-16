@@ -37,7 +37,7 @@ Discover a new way to immerse yourself in the world of music with our Spotify AP
 ![sign up](./assets/signup.png)
 
 3. **Access your account**
-![login](./assets/login.png)
+![log in](./assets/login.png)
 
 4. **Create your own music collections** 
 ![create playlist by searching a keyword or feeling](./assets//search.png)
@@ -49,9 +49,7 @@ Discover a new way to immerse yourself in the world of music with our Spotify AP
 ![playlist form asking for playlist title and description](./assets/create-playlist.png)
 
 7. **View Your playlists**
-
-
-
+![playlist list on left side with carousel of playlist songs on right](./assets//viewPlaylists.png)
 
 ## Contributions: 
 
@@ -75,7 +73,7 @@ We appreciate your interest in contributing to Cadence.
 ## Links: 
 
 - [GitHub Repository](https://github.com/kemcclen/Cadence) 
-- [Deployed page]() 
+- [Deployed page](https://cadence-music-8f49c24828dd.herokuapp.com/) 
 
 ## Credits
 - [gaomaoyuan](https://github.com/gaomaoyuan)  - Gao Maoyuan
@@ -89,7 +87,8 @@ We appreciate your interest in contributing to Cadence.
 - MongoDB and the Mongoose ODM for the database
 - Queries and mutations for retrieving, adding, updating, and deleting data
 - JWT authentication
-- API
+- PWA Authentication
+- API: OpenAI and Spotify 
 - Heroku
 
 ## License:
