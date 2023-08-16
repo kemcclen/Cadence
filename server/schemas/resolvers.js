@@ -198,7 +198,8 @@ const resolvers = {
           response_type: "code",
           client_id: process.env.REACT_APP_CLIENT_ID,
           scope: scopes,
-          redirect_uri: "http://localhost:3001/callback",
+          redirect_uri:
+            "https://cadence-music-8f49c24828dd.herokuapp.com/callback",
           state: state,
         });
 
@@ -344,7 +345,8 @@ const resolvers = {
       const spotifyApi = new SpotifyWebApi({
         clientId: process.env.REACT_APP_CLIENT_ID,
         clientSecret: process.env.REACT_APP_CLIENT_SECRET,
-        redirectUri: "http://localhost:3001/callback",
+        redirectUri:
+          "https://cadence-music-8f49c24828dd.herokuapp.com/callback",
         accessToken,
         refreshToken,
       });

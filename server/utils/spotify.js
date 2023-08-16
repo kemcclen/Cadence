@@ -4,7 +4,7 @@ require("dotenv").config();
 const spotifyApi = new SpotifyWebApi({
   clientId: process.env.REACT_APP_CLIENT_ID,
   clientSecret: process.env.REACT_APP_CLIENT_SECRET,
-  redirectUri: "http://localhost:3001/callback",
+  redirectUri: "https://cadence-music-8f49c24828dd.herokuapp.com/callback",
 });
 
 // Handle the Spotify callback and exchange the authorization code for an access token
