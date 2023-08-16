@@ -32,7 +32,9 @@ const handleSpotifyCallback = async (req, res) => {
     });
 
     // Redirect to the React app
-    res.status(200).redirect("/");
+    res
+      .status(200)
+      .redirect("https://cadence-music-8f49c24828dd.herokuapp.com/");
   } catch (error) {
     console.error("Error exchanging authorization code:", error.message);
     res.status(500).json({ error: "Failed to exchange authorization code" });
