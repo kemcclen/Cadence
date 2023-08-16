@@ -32,7 +32,7 @@ const handleSpotifyCallback = async (req, res) => {
     });
 
     // Redirect to the React app
-    res.status(200).redirect("http://localhost:3000");
+    res.status(200).redirect("/");
   } catch (error) {
     console.error("Error exchanging authorization code:", error.message);
     res.status(500).json({ error: "Failed to exchange authorization code" });
